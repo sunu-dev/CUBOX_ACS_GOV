@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="history">
+	
+	<sql id="selectIdentifyHistColumns"><![CDATA[
+		select sn
+		     , date_format(request_dt, '%Y-%m-%d %H:%i:%S') as request_dt
+		     , face_id
+		     , device_id
+		     , score 
+		     , threshold
+		     , result_cd 
+		     , case when result_cd = 1 then '성공' when result_cd = 0 then '실패' else '갤러리없음' end as result_nm 
+		     , image_1_path
+		     , image_2_path 
+		  from frs_history_iden
+	]]></sql>
+	
+	<sql id="selectIdentifyHistConditions"><![CDATA[
+		 where request_dt >= str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and request_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')]]>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(resultCd)'>
+		   and result_cd = #{resultCd} 
+		</if>	
+	</sql> 
+	
+	<select id="selectIdentifyHistInfo" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectIdentifyHistColumns" />
+		 where sn = #{srchSn}
+	</select>	
+	
+	<select id="selectIdentifyHist" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectIdentifyHistColumns" />
+		<include refid="selectIdentifyHistConditions" />
+		 order by request_dt desc
+		 limit #{srchCnt} offset #{offset}
+	</select>	
+	
+	<select id="selectIdentifyHistCount" parameterType="HashMap" resultType="int">
+		select count(1) 
+		  from frs_history_iden
+		<include refid="selectIdentifyHistConditions" />		   
+	</select>	
+	
+	<select id="selectIdentifyHistXls" parameterType="HashMap" resultType="excelVO">
+		select ${excelColumns} 
+		  from ( 
+		<include refid="selectIdentifyHistColumns" />
+		<include refid="selectIdentifyHistConditions" />
+		) t
+		order by t.sn desc		
+	</select>	
+	
+	<sql id="selectVerifyHistColumns"><![CDATA[
+		select sn
+		     , date_format(request_dt, '%Y-%m-%d %H:%i:%S') as request_dt
+		     , device_id
+		     , score 
+		     , threshold
+		     , result_cd 
+		     , case when result_cd = 1 then '성공' when result_cd = 0 then '실패' else '갤러리없음' end as result_nm 
+		     , image_1_path
+		     , image_2_path 
+		  from frs_history_veri
+	]]></sql>
+	
+	<sql id="selectVerifyHistConditions"><![CDATA[
+		 where request_dt >= str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and request_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')]]>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(resultCd)'>
+		   and result_cd = #{resultCd} 
+		</if>	
+	</sql> 
+	
+	<select id="selectVerifyHistInfo" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectVerifyHistColumns" />
+		 where sn = #{srchSn}
+	</select>	
+	
+	<select id="selectVerifyHist" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectVerifyHistColumns" />
+		<include refid="selectVerifyHistConditions" />
+		 order by request_dt desc
+		 limit #{srchCnt} offset #{offset}
+	</select>	
+	
+	<select id="selectVerifyHistCount" parameterType="HashMap" resultType="int">
+		select count(1) 
+		  from frs_history_veri
+		<include refid="selectVerifyHistConditions" />
+	</select>	
+	
+	<select id="selectVerifyHistXls" parameterType="HashMap" resultType="excelVO">
+		select ${excelColumns} 
+		  from ( 
+		<include refid="selectVerifyHistColumns" />
+		<include refid="selectVerifyHistConditions" />
+		) t
+		order by t.sn desc
+	</select>		
+	
+	<select id="selectMainIdentifyHist" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectIdentifyHistColumns" />
+		 order by request_dt desc
+		 limit #{limitCnt}
+	</select>	
+	
+</mapper>

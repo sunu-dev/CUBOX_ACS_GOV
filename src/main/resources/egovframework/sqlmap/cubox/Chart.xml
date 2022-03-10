@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="chart">
+
+	<select id="selectMainChart01" resultType="HashMap"><![CDATA[
+		select t.* from (
+			select date_format(str_to_date(stat_de, '%Y%m%d'), '%Y-%m-%d') stat_de
+			     , requst_cnt
+			     , succes_cnt
+			     , failr_cnt
+			  from stat_crtt_day
+			 order by stat_de desc 
+			 limit 5
+		) t order by stat_de
+	]]></select>
+	
+	<select id="selectMainChart02" resultType="HashMap"><![CDATA[
+		select cf_tot
+		     , cf_pass
+		     , cf_fail
+		     , round((cf_pass / case when cf_tot > 0 then cf_tot else 1 end) * 100, 2) as cf_pass_rate
+		     , round((cf_fail / case when cf_tot > 0 then cf_tot else 1 end) * 100, 2) as cf_fail_rate
+		  from (
+			select count(1) as cf_tot
+			     , ifnull(sum(case when result_cd = 1 then 1 else 0 end), 0) as cf_pass
+			     , ifnull(sum(case when result_cd = 0 then 1 else 0 end), 0) as cf_fail
+			  from history 
+			 where request_dt >= current_date()
+		  ) t
+	]]></select>
+
+</mapper>

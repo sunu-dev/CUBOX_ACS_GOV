@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="code">
+	
+	<select id="selectCdCombo" parameterType="String" resultType="HashMap">
+		select esntl_cd
+		     , esntl_cd as cd
+		     , cd_nm
+		     , cd_desc
+		     , cd_dp
+		     , sort_ordr 
+		  from cmn_cd
+		 where upper_cd = #{upper_cd}
+		   and use_yn = 'Y'
+		 order by sort_ordr
+	</select>
+	
+	<select id="selectUpperCdCombo" resultType="HashMap">
+		select esntl_cd
+		     , esntl_cd as upper_cd
+		     , concat(cd_nm, (case when use_yn = 'N' then ' (사용안함)' else '' end)) as upper_cd_nm
+		     , cd_desc
+		     , cd_dp
+		     , use_yn
+		     , sort_ordr
+		  from cmn_cd
+		 where upper_cd = '00000'
+		   <!-- and use_yn = 'Y' -->
+		 order by sort_ordr
+	</select>	
+	
+	<select id="selectCdInfo" parameterType="HashMap" resultType="HashMap">
+		select esntl_cd
+		     , esntl_cd as cd
+		     , cd_nm
+		     , upper_cd
+		     , cd_desc
+		     , cd_dp
+		     , use_yn
+		     , sort_ordr 
+		  from cmn_cd
+		 where esntl_cd = #{cd}
+		   and upper_cd = #{upper_cd}		 
+	</select>	
+	
+	<select id="selectCdList" parameterType="HashMap" resultType="HashMap">
+		select esntl_cd
+		     , esntl_cd as cd
+		     , cd_nm
+		     , upper_cd
+		     , cd_desc
+		     , cd_dp
+		     , use_yn
+		     , sort_ordr 
+		  from cmn_cd
+		 where upper_cd = #{upper_cd}
+		 order by sort_ordr
+	</select>
+	
+	<sql id="selectCdAllListConditions">
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(upper_cd)'>
+		   and d.upper_cd = #{upper_cd}
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(cd_nm)'>
+		   and d.cd_nm like concat('%', #{cd_nm}, '%')
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(use_yn)'>
+		   and d.use_yn = #{use_yn}
+		</if>
+	</sql>
+	
+	<select id="selectCdAllList" parameterType="HashMap" resultType="HashMap">
+		select m.esntl_cd as upper_cd
+		     , m.cd_nm as upper_cd_nm
+		     , m.sort_ordr as upper_sort_ordr
+		     , m.use_yn as upper_use_yn		     
+		     , d.esntl_cd as cd
+		     , d.cd_nm
+		     , d.use_yn as use_yn
+		     , d.cd_desc as cd_desc
+		     , d.sort_ordr as sort_ordr
+		     , m.sort_ordr * 1000 + d.sort_ordr as cf_sort_ordr
+		  from cmn_cd m
+		       inner join cmn_cd d on m.esntl_cd = d.upper_cd
+		 where 1 = 1
+		<include refid="selectCdAllListConditions"/>
+		 order by cf_sort_ordr
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchCnt)'>
+		 limit #{srchCnt} offset #{offset}
+		</if>
+	</select>
+	
+	<select id="selectCdAllListCount" parameterType="HashMap" resultType="int">
+		select count(1)
+		  from cmn_cd m
+		       inner join cmn_cd d on m.esntl_cd = d.upper_cd
+		 where 1 = 1  
+		<include refid="selectCdAllListConditions"/>
+	</select>	
+	
+	<select id="selectNewUpperCd" resultType="String">
+		select lpad(ifnull(max(esntl_cd), '0') + 1, 5, '0')
+		  from cmn_cd
+		 where upper_cd = '00000'
+	</select>
+	
+	<select id="selectCdInfoDup" parameterType="HashMap" resultType="int">
+		select count(1)
+		  from cmn_cd
+		 where esntl_cd = #{cd}
+		   and upper_cd = #{upper_cd} 
+	</select>
+	
+	<insert id="insertCdInfo" parameterType="HashMap">
+		insert into cmn_cd
+			( esntl_cd
+			, cd_nm
+			, cd_desc
+			, cd_dp
+			, upper_cd
+			, use_yn
+			, sort_ordr
+			, regist_id
+			, regist_dt
+			)
+		values
+			( #{cd}
+			, #{cd_nm}
+			, #{cd_desc}
+			, #{cd_dp}
+			, #{upper_cd}
+			, 'Y'
+			, #{sort_ordr}
+			, #{regist_id}
+			, now(3)
+			)
+	</insert>
+	
+	<update id="updateCdInfo" parameterType="HashMap">
+		update cmn_cd
+		   set cd_nm = #{cd_nm}
+		     , cd_desc = #{cd_desc}
+		     , sort_ordr = #{sort_ordr}
+		     , updt_id = #{updt_id}
+		     , updt_dt = now(3)
+		 where esntl_cd = #{cd}
+		   and upper_cd = #{upper_cd}
+	</update>
+	
+	<update id="updateCdUseYn" parameterType="HashMap">
+		update cmn_cd
+		   set use_yn = #{use_yn}
+		     , updt_id = #{updt_id}
+		     , updt_dt = now(3)
+		 where esntl_cd = #{cd}
+		   and upper_cd = #{upper_cd}		 
+	</update>		
+	
+	<resultMap id="cdTreeMap" type="upperCodeVO">
+		<id property="id" column="p_cd" javaType="java.lang.String" />
+		<result property="text" column="p_cd_nm" javaType="java.lang.String" />
+		<result property="icon" column="p_cd_icon" javaType="java.lang.String" />
+		<result property="href" column="p_href" javaType="java.lang.String" />
+		<collection property="nodes" resultMap="cdChildTreeMap"/>
+	</resultMap>
+	
+	<resultMap id="cdChildTreeMap" type="codeVO">
+		<id property="id" column="cd" javaType="java.lang.String" />
+		<result property="text" column="cd_nm" javaType="java.lang.String" />
+		<result property="icon" column="cd_icon" javaType="java.lang.String" />
+	</resultMap>		
+			
+	<select id="selectCdTree" resultMap="cdTreeMap">
+		select m.esntl_cd as p_cd
+		     , concat(m.cd_nm, case when m.use_yn = 'N' then ' (사용안함)' else '' end) as p_cd_nm
+		     , m.cd_dp as p_cd_dp
+		     , m.sort_ordr as p_sort_ordr
+		     , 'fa fa-folder' as p_cd_icon
+		     , 'Y' as p_href 
+		     , d.esntl_cd as cd
+		     , concat(d.cd_nm, case when m.use_yn = 'N' then ' (사용안함)' else '' end) as cd_nm
+		     , d.use_yn as use_yn
+		     , d.cd_desc as cd_desc
+		     , d.sort_ordr as sort_ordr
+		     , 'fa fa-inbox' as cd_icon
+		     , m.sort_ordr * 1000 + d.sort_ordr as cf_sort_ordr
+		  from cmn_cd m
+		       inner join cmn_cd d on m.esntl_cd = d.upper_cd 
+		 order by cf_sort_ordr	
+	</select>
+
+</mapper>

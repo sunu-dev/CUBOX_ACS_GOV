@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<properties>
+		<property name="site">logs_frs_mng</property>
+		<property name="local">D:/log/logs_frs_mng</property>
+		<property name="dev">${sys:catalina.base}/logs</property>
+		<property name="prod">${sys:catalina.base}/logs</property>
+	</properties>
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %5p [%c] %m%n" />
+		</Console>
+		<RollingFile name="RollingfileRoot" fileName="${${sys:spring.profiles.active}}/console.log" filePattern="${${sys:spring.profiles.active}}/console-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout>
+				<pattern>%d %5p [%c] %m%n"</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="500" fileIndex="min"/>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="jdbc.sqlonly" level="ERROR" additivity="false">
+			<RegexFilter regex="(?s).*==IGNORE_LOG==.*" onMatch="DENY" onMismatch="NEUTRAL" useRawMsg="true" />
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<Logger name="egovframework" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<!-- log SQL with timing information, post execution -->
+		<Logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+			<RegexFilter regex="(?s).*==IGNORE_LOG==.*" onMatch="DENY" onMismatch="NEUTRAL" useRawMsg="true" />
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<Logger name="jdbc.audit" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<Logger name="jdbc.resultset" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<Logger name="jdbc.resultsettable" level="OFF" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<Logger name="org.springframework" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Logger>
+		<logger name="org.quartz" level="warn" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</logger>
+		<logger name="org.apache" level="warn" additivity="false"><!-- S3 image -->
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</logger>
+		<Root level="debug">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="RollingfileRoot" />
+		</Root>
+	</Loggers>
+</Configuration>

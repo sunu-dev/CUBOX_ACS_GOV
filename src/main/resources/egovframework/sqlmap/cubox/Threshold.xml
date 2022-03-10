@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="threshold">
+
+	<select id="selectThresholdCombo" resultType="HashMap">
+		select sn, nm, val from frs_threshold
+	</select>
+	
+	<select id="selectThresholdList" parameterType="HashMap" resultType="HashMap">
+	<![CDATA[
+		select sn 
+		     , nm 
+		     , val 
+		     , type 
+		     , (select cd_nm from cmn_cd where upper_cd = '00002' and esntl_cd = type) type_nm
+		     , type_2
+		     , regist_id 
+		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') as regist_dt 
+		     , updt_id 
+		     , date_format(updt_dt, '%Y-%m-%d %H:%i:%s') as updt_dt     
+		  from frs_threshold		  
+		 limit #{srchCnt} offset #{offset}
+	]]>
+	</select>
+	
+	<select id="selectThresholdListCount" parameterType="HashMap" resultType="int">
+		select count(1) from frs_threshold
+	</select>
+	
+	<select id="selectThresholdInfo" parameterType="HashMap" resultType="HashMap">
+		select sn 
+		     , nm 
+		     , val 
+		     , type 
+		     , (select cd_nm from cmn_cd where upper_cd = '00002' and esntl_cd = type) type_nm
+		     , type_2
+		     , regist_id 
+		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') as regist_dt 
+		     , updt_id 
+		     , date_format(updt_dt, '%Y-%m-%d %H:%i:%s') as updt_dt     
+		  from frs_threshold
+		 where sn = #{sn}	
+	</select>
+	
+	<insert id="insertThresholdInfo" parameterType="HashMap">
+	<![CDATA[
+		insert into frs_threshold (nm, val, type, type_2, regist_id, regist_dt)
+		values (#{nm}, #{val}, #{type}, #{type_2}, #{regist_id}, now(3))
+	]]>			
+	</insert>
+
+	<update id="updateThresholdInfo" parameterType="HashMap">
+	<![CDATA[
+		update frs_threshold
+		   set nm = #{nm}
+		     , val = ${val}
+		     , type = #{type}
+		     , type_2 = #{type_2}
+		     , updt_id = #{updt_id}
+		     , updt_dt = now(3)
+		 where sn = #{sn}		     
+	]]>			
+	</update>
+	
+	<update id="updateThresholdValue" parameterType="HashMap">
+	<![CDATA[
+		update frs_threshold
+		   set val = ${val}
+		     , updt_id = #{updt_id}
+		     , updt_dt = now(3)
+		 where sn = #{sn}		     
+	]]>			
+	</update>	
+	
+	<insert id="insertThresholdHistory" parameterType="HashMap">
+	<![CDATA[
+		insert into frs_threshold_log (threshold_sn, val, regist_id, regist_dt)		 
+		select sn, val, #{updt_id}, now(3)		 
+		  from frs_threshold 
+		 where sn = #{sn}
+	]]>			
+	</insert>	
+	
+	<select id="selectThresholdHistory" parameterType="HashMap" resultType="HashMap">
+		select log.sn
+		     , log.threshold_sn 
+		     , log.val 
+		     , log.regist_id 
+		     , (select user_nm from cmn_user where esntl_id = log.regist_id) regist_nm
+		     , date_format(log.regist_dt, '%Y-%m-%d %H:%i:%s') regist_dt 
+		     , threshold.nm 
+		     , threshold.type
+		     , (select cd_nm from cmn_cd where upper_cd = '00002' and esntl_cd = threshold.type) type_nm
+		     , type_2
+		  from frs_threshold_log log 
+		       inner join frs_threshold threshold on log.threshold_sn = threshold.sn
+		 where log.regist_dt <![CDATA[>=]]> str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and log.regist_dt <![CDATA[<=]]> str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchCd)'>
+		   and log.threshold_sn = #{srchCd}
+		</if>
+		 order by log.sn desc
+		 limit #{srchCnt} offset #{offset}	  
+	</select>
+	
+	<select id="selectThresholdHistoryCount" parameterType="HashMap" resultType="int">
+		select count(1)
+		  from frs_threshold_log	
+		 where regist_dt <![CDATA[>=]]> str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and regist_dt <![CDATA[<=]]> str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchCd)'>
+		   and threshold_sn = #{srchCd}
+		</if>
+	</select>	
+			
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gallery">
+	
+	<select id="selectGalleryInfo" parameterType="HashMap" resultType="HashMap">
+	<![CDATA[
+		select sn
+		     , face_id
+		     , case when feature is null or length(feature) = 0 then 'N' else 'Y' end as feature_yn
+		     , image_path
+		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') as regist_dt 
+		  from frs_gallery
+		 where sn = ${srchSn}
+	]]>
+	</select>
+	
+	<select id="selectGalleryList" parameterType="HashMap" resultType="HashMap">
+	<![CDATA[
+		select sn
+		     , face_id
+		     , case when feature is null or length(feature) = 0 then 'N' else 'Y' end as feature_yn
+		     , image_path
+		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') as regist_dt 
+		  from frs_gallery
+		 where regist_dt >= str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and regist_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')
+		 order by regist_dt desc
+		 limit #{srchCnt} offset #{offset}
+	]]>
+	</select>
+	
+	<select id="selectGalleryListCount" parameterType="HashMap" resultType="int">
+	<![CDATA[
+		select count(1) 
+		  from frs_gallery
+		 where regist_dt >= str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and regist_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')		  
+	]]>
+	</select>
+	
+</mapper>

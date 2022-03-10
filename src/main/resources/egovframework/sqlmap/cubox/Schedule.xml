@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="schedule">
+	
+	<insert id="insertStatCrttDay" parameterType="String">
+	<![CDATA[
+		delete from stat_crtt_day where stat_de = replace(#{base_de}, '-', '');
+			
+		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, batch_dt)
+		select stat_de
+		     , sum(requst_cnt) requst_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , sum(failr_cnt) failr_cnt
+		     , current_timestamp() batch_dt
+		from (
+			select date_format(request_dt, '%Y%m%d') stat_de
+			     , count(1) requst_cnt
+			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
+			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
+			  from history
+			 where request_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
+			   and request_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)
+			 group by date_format(request_dt, '%Y%m%d')
+			 union all
+			select replace(#{base_de}, '-', ''), 0, 0, 0
+			) t
+		 group by stat_de;
+	]]>
+	</insert>
+	
+	<insert id="insertStatGlryDay" parameterType="String">
+	<![CDATA[
+		delete from stat_glry_day where stat_de = replace(#{base_de}, '-', '');
+			
+		insert into stat_glry_day (stat_de, regist_cnt, succes_cnt, failr_cnt, batch_dt)
+		select stat_de
+		     , sum(regist_cnt) regist_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , sum(failr_cnt) failr_cnt
+		     , current_timestamp()
+		 from (
+			select date_format(create_dt, '%Y%m%d') stat_de
+			     , count(1) regist_cnt
+			     , sum(case when feature is null or trim(feature) = '' then 0 else 1 end) succes_cnt
+			     , sum(case when feature is null or trim(feature) = '' then 1 else 0 end) failr_cnt 
+			  from gallery    
+			 where create_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
+			   and create_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)		  
+			group by date_format(create_dt, '%Y%m%d')
+			 union all
+			select replace(#{base_de}, '-', ''), 0, 0, 0
+			) t
+		group by stat_de;
+	]]>
+	</insert>
+	
+</mapper>

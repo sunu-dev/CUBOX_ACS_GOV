@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="device">
+
+	<select id="selectDeviceInfo" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectDeviceInfoColumns" />
+		 where sn = #{sn}
+	</select>
+	
+	<sql id="selectDeviceInfoColumns">
+		select sn 
+		     , device_id 
+		     , type
+		     , (select cd_nm from cmn_cd where upper_cd = '00004' and esntl_cd = type) type_nm
+		     , ip
+		     , mac
+		     , manufacture
+		     , ifnull((select cd_nm from cmn_cd where upper_cd = '00005' and esntl_cd = manufacture), manufacture) manufacture_nm
+		     , os
+		     , ifnull((select cd_nm from cmn_cd where upper_cd = '00006' and esntl_cd = os), os) os_nm
+		     , status
+		     , (select cd_nm from cmn_cd where upper_cd = '00007' and esntl_cd = status) status_nm
+		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') regist_dt 
+		     , date_format(updt_dt, '%Y-%m-%d %H:%i:%s') updt_dt 
+		  from frs_device	
+	</sql>
+	
+	<select id="selectDeviceList" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectDeviceInfoColumns" />
+		<include refid="selectDeviceListConditions" />
+		 order by regist_dt desc
+		 limit #{srchCnt} offset #{offset}  
+	</select>
+	
+	<sql id="selectDeviceListConditions">
+		 where regist_dt <![CDATA[>=]]> str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and regist_dt <![CDATA[<=]]> str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')   
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchStatus)'>
+		   and status = #{srchStatus} 
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@empty(srchStatus)'>
+		   and status <![CDATA[<>]]> 'W' 
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchType)'>
+		   and type = #{srchType}
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchManufacture)'>
+		   and manufacture = #{srchManufacture}
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'>
+		   and device_id = #{srchUuid}
+		</if>
+	</sql>	
+	
+	<select id="selectDeviceListCount" parameterType="HashMap" resultType="int">
+		select count(1)
+		  from frs_device
+		<include refid="selectDeviceListConditions" />
+	</select>
+	
+	<update id="updateDeviceListForStatus" parameterType="HashMap">
+		update frs_device 
+		   set status = #{status}
+		     , updt_dt = now(3)
+		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</update>
+	
+	<update id="deleteDeviceList" parameterType="HashMap">
+		delete from frs_device 
+		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</update>
+	
+	<insert id="insertDeviceStatusHistoryForStatus" parameterType="HashMap">
+		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt)
+		select sn, device_id, status, #{regist_id}, updt_dt
+		  from frs_device
+		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</insert>
+	
+	<insert id="insertDeviceStatusHistoryForDelete" parameterType="HashMap">
+		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt, description)
+		select sn, device_id, 'D', #{regist_id}, now(3), #{description}
+		  from frs_device
+		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</insert>
+	
+	<select id="selectDeviceStatusHistory" parameterType="HashMap" resultType="HashMap">
+		select a.device_id
+		     , a.status
+		     , (select cd_nm from cmn_cd where upper_cd = '00007' and esntl_cd = a.status) status_nm
+		     , a.regist_id
+		     , ifnull(b.user_nm, a.regist_id) as regist_nm
+		     , date_format(a.regist_dt, '%Y-%m-%d %H:%i:%s') regist_dt
+		     , description
+		  from frs_device_status_log a
+		       left outer join cmn_user b on b.esntl_id = a.regist_id
+		<include refid="selectDeviceStatusHistoryConditions" />
+		 order by a.regist_dt desc	
+		 limit #{srchCnt} offset #{offset}
+	</select>
+	
+	<sql id="selectDeviceStatusHistoryConditions">
+		 where 1 = 1	
+		   and a.regist_dt <![CDATA[>=]]> str_to_date(#{srchDtFr}, '%Y-%m-%d')
+		   and a.regist_dt <![CDATA[<=]]> str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')   
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'>
+		   and a.device_id = #{srchUuid}
+		</if>
+	</sql>		
+	
+	<select id="selectDeviceStatusHistoryCount" parameterType="HashMap" resultType="int">
+		select count(1)
+		  from frs_device_status_log a
+		<include refid="selectDeviceStatusHistoryConditions" />
+	</select>	
+	
+	<select id="selectDeviceUuidList" parameterType="HashMap" resultType="String">
+		select device_id
+		  from frs_device
+		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach> 
+	</select>
+	
+	<update id="updateDeviceStatusLog" parameterType="HashMap">
+		update frs_device_status_log 
+		   set regist_id = #{regist_id}
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'><![CDATA[		   
+		     , description = #{description}
+		]]></if>		     
+		 where sn = #{sn}
+	</update>
+	
+</mapper>

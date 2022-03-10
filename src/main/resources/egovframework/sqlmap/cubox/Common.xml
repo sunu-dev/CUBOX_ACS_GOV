@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common">
+
+	<select id="actionLogin" parameterType="loginVO" resultType="loginVO">
+		select esntl_id as esntlId
+		     , user_id as userId
+		     , user_nm as userNm
+		     , author_cd as authorCd
+		     , pw_updt_yn as pwUpdtYn
+		     , date_format(pw_updt_dt, '%Y-%m-%d') as pwUpdtDe
+		     , ifnull(datediff(now(3), pw_updt_dt), 999) pwUpdtDays
+		     , ifnull(pw_failr_cnt, 0) as pwFailrCnt
+		     , use_yn as useYn
+		  from cmn_user
+		 where user_id = #{userId}
+		   and user_pw = #{userPw}
+	</select>
+
+	<update id="lastConnect" parameterType="loginVO">
+		update cmn_user
+		   set last_conect_dt = now()
+		     , pw_failr_cnt = 0
+		 where user_id = #{userId}
+	</update>
+	
+	<update id="failConnect" parameterType="loginVO">
+		update cmn_user
+		   set last_conect_dt = now()
+		     , pw_failr_cnt = ifnull(pw_failr_cnt, 0)+1
+		 where user_id = #{userId}
+	</update>	
+
+	<select id="selectAuthorList" parameterType="HashMap" resultType="authorVO">
+		SELECT AUTHOR_CD AS authorCd
+		     , AUTHOR_NM AS authorNm
+		     , USE_YN AS useYn
+		     , SORT_ORDR AS sortOrdr
+		  FROM cmn_author AC
+		<if test="@cubox.admin.cmmn.util.CommonUtils@notEmpty(useYn)">
+		 WHERE USE_YN = #{useYn}
+		</if>
+		 ORDER BY AC.SORT_ORDR ASC
+	</select>
+
+	<select id="selectMenuClListByAuthor" parameterType="HashMap" resultType="menuClVO">
+		SELECT C.MENU_CL_CD as menuClCd
+		     , C.MENU_CL_NM as menuClNm
+		     , C.ICON_IMAGE as iconImage
+		  FROM cmn_menu_cl C
+		 WHERE C.MENU_CL_CD IN (SELECT MD.MENU_CL_CD
+		                          FROM cmn_author_menu AM
+		                               INNER JOIN cmn_menu MD ON AM.MENU_CD = MD.MENU_CD 
+		                         WHERE AM.AUTHOR_CD = #{authorCd}
+		                           AND MD.USE_YN = 'Y')
+		   AND C.USE_YN  = 'Y'
+		 ORDER BY C.SORT_ORDR
+	</select>
+
+	<select id="selectAuthorMenuList" parameterType="HashMap" resultType="menuVO">
+		SELECT MD.MENU_CD as menuCd
+		     , MD.MENU_CL_CD as menuClCd
+			 , MD.MENU_NM as menuNm
+			 , MD.MENU_URL as menuUrl
+			 , MD.SORT_ORDR as sortOrdr
+		  FROM cmn_author_menu AM
+		       INNER JOIN cmn_menu MD ON AM.MENU_CD = MD.MENU_CD 
+		 WHERE MD.USE_YN = 'Y'
+		   AND AM.AUTHOR_CD = #{authorCd}
+		<if test="@cubox.admin.cmmn.util.CommonUtils@notEmpty(menuClCd)">
+		   AND MD.MENU_CL_CD = #{menuClCd}
+		</if>
+		ORDER BY MD.SORT_ORDR
+	</select>
+
+
+</mapper>

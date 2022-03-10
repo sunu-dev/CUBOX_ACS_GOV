@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="false"/>
+		<setting name="callSettersOnNulls" value="false"/>			<!-- 쿼리 결과 필드가 null인 경우, 누락이 되서 나오는데 누락이 안되게 하는 설정 -->
+		<setting name="jdbcTypeForNull" value="NULL"/>				<!-- 쿼리에 보내는 파라메터가 null인 경우, 오류 발생하는 것 방지  예) #{search.user}  -->
+	</settings>
+	<typeAliases>
+		<typeAlias alias="commonUtils" type="cubox.admin.cmmn.util.CommonUtils"/>
+		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+		<typeAlias alias="authorVO" type="cubox.admin.main.service.vo.AuthorVO"/>
+		<typeAlias alias="menuClVO" type="cubox.admin.main.service.vo.MenuClVO"/>
+		<typeAlias alias="menuVO" type="cubox.admin.main.service.vo.MenuVO"/>
+		<typeAlias alias="excelVO" type="cubox.admin.main.service.vo.ExcelVO"/>
+		<typeAlias alias="loginVO" type="cubox.admin.main.service.vo.LoginVO"/>
+		<typeAlias alias="codeVO" type="cubox.admin.main.service.vo.CodeVO"/>
+		<typeAlias alias="upperCodeVO" type="cubox.admin.main.service.vo.UpperCodeVO"/>
+	</typeAliases>
+</configuration>

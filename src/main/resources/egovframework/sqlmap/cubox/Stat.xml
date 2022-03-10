@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="stat">
+	
+	<sql id="getCrttDayStat"><![CDATA[
+		select case when gb = 1 then '합계' else date_format(str_to_date(s.stat_de, '%Y%m%d'), '%Y-%m-%d') end as stat_de 
+		     , sum(requst_cnt) requst_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , round(sum(succes_cnt) / (case when sum(requst_cnt) > 0 then sum(requst_cnt) else 1 end) * 100, 2) as succes_rate
+		     , sum(failr_cnt) failr_cnt
+		     , round(sum(failr_cnt) / (case when sum(requst_cnt) > 0 then sum(requst_cnt) else 1 end) * 100, 2) as failr_rate
+		  from stat_crtt_day s
+		       inner join (select 1 gb union all select 2 gb) d 
+		 where s.stat_de >= replace(#{srchDtFr}, '-', '')
+		   and s.stat_de <= replace(#{srchDtTo}, '-', '')
+		 group by case when gb = 1 then '합계' else date_format(str_to_date(s.stat_de, '%Y%m%d'), '%Y-%m-%d') end
+		 order by stat_de desc
+	]]></sql>
+	
+	<select id="selectCrttDay" parameterType="HashMap" resultType="HashMap">
+		<include refid="getCrttDayStat" />
+	</select>
+	
+	<select id="selectCrttDayXls" parameterType="HashMap" resultType="excelVO">
+		select ${excelColumns} 
+		  from ( 
+		<include refid="getCrttDayStat" />
+		) t
+	</select>
+	
+	<sql id="getGlryDayStat"><![CDATA[
+		select case when gb = 1 then '합계' else date_format(str_to_date(s.stat_de, '%Y%m%d'), '%Y-%m-%d') end as stat_de
+		     , sum(s.regist_cnt) as regist_cnt 
+		     , sum(s.succes_cnt) as succes_cnt
+		     , round(sum(s.succes_cnt) / (case when sum(s.regist_cnt) > 0 then sum(s.regist_cnt) else 1 end) * 100, 2) as succes_rate
+		     , sum(s.failr_cnt) as failr_cnt
+		     , round(sum(s.failr_cnt) / (case when sum(s.regist_cnt) > 0 then sum(s.regist_cnt) else 1 end) * 100, 2) as failr_rate
+		  from stat_glry_day s
+		       inner join (select 1 gb union all select 2 gb) d
+		 where s.stat_de >= replace(#{srchDtFr}, '-', '')
+		   and s.stat_de <= replace(#{srchDtTo}, '-', '')
+		 group by case when gb = 1 then '합계' else date_format(str_to_date(s.stat_de, '%Y%m%d'), '%Y-%m-%d') end
+		 order by stat_de desc
+	]]></sql>	
+	
+	<select id="selectGlryDay" parameterType="HashMap" resultType="HashMap">
+		<include refid="getGlryDayStat" />
+	</select>
+	
+	<select id="selectGlryDayXls" parameterType="HashMap" resultType="excelVO">
+		select ${excelColumns} 
+		  from (
+		<include refid="getGlryDayStat" />
+		) t
+	</select>
+	
+</mapper>
