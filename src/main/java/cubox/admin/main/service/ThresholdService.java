@@ -15,5 +15,7 @@ public interface ThresholdService {
 	public Map<String, Object> selectThresholdInfo(Map<String, Object> param) throws Exception;
 	public int insertThresholdInfo(Map<String, Object> param) throws Exception;	
 	public int updateThresholdInfo(Map<String, Object> param) throws Exception;		
-	public int updateThresholdValue(Map<String, Object> param) throws Exception;		
+	public int updateThresholdValue(Map<String, Object> param) throws Exception;
+	
+	public int updateThresholdLog(Map<String, Object> param) throws Exception;		
 }

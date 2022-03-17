@@ -25,7 +25,7 @@
 			select count(1) as cf_tot
 			     , ifnull(sum(case when result_cd = 1 then 1 else 0 end), 0) as cf_pass
 			     , ifnull(sum(case when result_cd = 0 then 1 else 0 end), 0) as cf_fail
-			  from history 
+			  from frs_history_iden 
 			 where request_dt >= current_date()
 		  ) t
 	]]></select>

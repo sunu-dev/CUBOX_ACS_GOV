@@ -62,4 +62,9 @@ public class ThresholdServiceImpl extends EgovAbstractServiceImpl implements Thr
 	public int updateThresholdValue(Map<String, Object> param) throws Exception {
 		return thresholdDAO.updateThresholdValue(param);
 	}	
+	
+	@Override
+	public int updateThresholdLog(Map<String, Object> param) throws Exception {
+		return thresholdDAO.updateThresholdLog(param);
+	}		
 }

@@ -82,8 +82,8 @@ function fnDetail(str) {
 <%-- <input type="hidden" id="chkValueArray" name="chkValueArray" value="face_id,feature_yn,regist_dt" /> 
 <input type="hidden" id="chkTextArray" name="chkTextArray" value="고유번호,이미지여부,등록일시"> --%>
 <input type="hidden" id="initYn" name="initYn" value="N">
-
-<!--검색박스 -->
+ 
+ <!--검색박스 -->
 <div class="search_box mb_20">
 	<div class="search_in_bline">
 		<div class="comm_search mr_20">
@@ -144,7 +144,7 @@ function fnDetail(str) {
 				<c:forEach items="${list}" var="list" varStatus="status">
 				<tr>
 					<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1)  + ( (pagination.curPage - 1)  *  pagination.recPerPage ) }</td>
-					<c:if test="${gvGalleryImageGb eq 'Y'}">
+					<c:if test="${gvGalleryImageGb ne 'N'}">
 					<td><a style="cursor: pointer;" onclick="fnDetail('${list.sn}')"><c:out value="${list.face_id}"/></a></td>
 					</c:if><c:if test="${gvGalleryImageGb eq 'N'}">
 					<td><c:out value="${list.face_id}"/></td>

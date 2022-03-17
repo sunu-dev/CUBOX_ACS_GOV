@@ -276,39 +276,33 @@ function fnGoToPage(page){
 	<div class="inbox3">
 		<div class="title">얼굴인증이력 (최근 <c:out value="${limitCnt}" />건)
 			<div class="more">
-				<img src="/img/main/icon_more.png" alt="" onclick="fnGoToPage('/gallery/history.do');"/>
+				<img src="/img/main/icon_more.png" alt="" onclick="fnGoToPage('/history/idenList.do');"/>
 			</div>
 		</div>
 		<div class="tb_outbox">
 			<table class="tb_list_main">
 				<colgroup>
 					<col width="5%">
+					<col width="20%">
+					<col width="30%">
 					<col width="15%">
-					<col width="12%">
-					<col width="9%">
-					<col width="9%">
-					<col width="9%">
-					<col width="14%">
-					<col width="13%">
-					<col width="14%">
+					<col width="15%">
+					<col width="15%">
 				</colgroup>		
 				<thead>
 					<tr>
 						<th>순번</th>
 						<th>인증요청일시</th>
-						<th>UUID</th>
+						<th>단말기ID</th>
 						<th>인증결과</th>
 						<th>매칭점수</th>
 						<th>기준점수</th>
-						<th>(a)특징점추출시간(ms)</th>
-						<th>(b)매칭시간(ms)</th>
-						<th>(a+b+α)전체시간(ms)</th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:if test="${list == null || fn:length(list) == 0}">
 					<tr>
-						<td class="h_35px" colspan="9">조회 목록이 없습니다.</td>
+						<td class="h_35px" colspan="6">조회 목록이 없습니다.</td>
 					</tr>
 					</c:if>
 					<c:forEach items="${list}" var="list" varStatus="status">
@@ -317,13 +311,10 @@ function fnGoToPage(page){
 					<tr>
 						<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1)  + ( (pagination.curPage - 1)  *  pagination.recPerPage ) }</td>
 						<td><c:out value="${list.request_dt}"/></td>
-						<td><c:out value="${list.uuid}"/></td>
+						<td><c:out value="${list.device_id}"/></td>
 						<td><c:out value="${list.result_nm}"/></td>
 						<td><font class="${vFontColor}"><c:out value="${list.score}"/></font></td>
 						<td><font class="font-color_V"><c:out value="${list.threshold}"/></font></td>
-						<td><c:out value="${list.inference_time}"/></td>
-						<td><c:out value="${list.match_time}"/></td>
-						<td><c:out value="${list.total_time}"/></td>
 					</tr>
 					</c:forEach>
 				</tbody>

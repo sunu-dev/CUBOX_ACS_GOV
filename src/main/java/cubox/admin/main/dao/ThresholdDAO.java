@@ -56,6 +56,9 @@ public class ThresholdDAO extends EgovAbstractMapper {
 		int cnt = update(sqlNameSpace+"updateThresholdValue", param);
 		insert(sqlNameSpace+"insertThresholdHistory", param);
 		return cnt;
-	}	
-
+	}
+	
+	public int updateThresholdLog(Map<String, Object> param) throws Exception {
+		return update(sqlNameSpace+"updateThresholdLog", param);
+	}
 }

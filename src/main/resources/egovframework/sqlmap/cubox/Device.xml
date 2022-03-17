@@ -124,10 +124,10 @@
 	<update id="updateDeviceStatusLog" parameterType="HashMap">
 		update frs_device_status_log 
 		   set regist_id = #{regist_id}
-		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'><![CDATA[		   
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(description)'><![CDATA[		   
 		     , description = #{description}
 		]]></if>		     
-		 where sn = #{sn}
+		 where sn = #{deviceStatusLogSn}
 	</update>
 	
 </mapper>

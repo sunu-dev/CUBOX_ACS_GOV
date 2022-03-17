@@ -235,9 +235,10 @@ public class DeviceController {
 							data.put("description", param.get("description"));
 						}
 						LOGGER.debug("###[단말기상태변경API][{}] update Log : {}", status, data);
-						int cnt2 = deviceService.updateDeviceStatusLog(data);				
-						LOGGER.debug("###[단말기상태변경API][{}] update cnt : {}", status, cnt2);
+						cnt = deviceService.updateDeviceStatusLog(data);				
+						LOGGER.debug("###[단말기상태변경API][{}] update cnt : {}", status, cnt);
 					} else {
+						cnt = 0;
 						LOGGER.error("###[단말기상태변경API][{}] result : {}", status, result);
 					}
 				}

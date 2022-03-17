@@ -113,5 +113,11 @@
 		   and threshold_sn = #{srchCd}
 		</if>
 	</select>	
+	
+	<update id="updateThresholdLog" parameterType="HashMap">
+		update frs_threshold_log
+		   set regist_id = #{regist_id}
+		 where sn = #{thresholdLogSn}	
+	</update>
 			
 </mapper>

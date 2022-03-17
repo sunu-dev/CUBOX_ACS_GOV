@@ -274,13 +274,24 @@ public class ThresholdController {
 
 				HashMap<String, Object> result = new HashMap<String, Object>();
 				result = FrmsApiUtil.getFrmsApiReq(reqBody, action, method); //{data=null, errorResponse=null, timestamp=1634635516192}  
-				LOGGER.debug("###[서버임계치API] result : {}", result);
+				LOGGER.debug("###[서버임계치API] result : {}", result);				
 				
-				if(result != null && !result.isEmpty()) {
+				if(StringUtil.nvl(result.get("responseCode")).equals("200")) {
+					HashMap<String, Object> data = (HashMap<String, Object>)result.get("data");
+					data.put("regist_id", loginVO.getEsntlId());
+					LOGGER.debug("###[서버임계치API] update Log : {}", data);
+					cnt = thresholdService.updateThresholdLog(data);				
+					LOGGER.debug("###[서버임계치API] update cnt : {}", cnt);
+				} else {
+					cnt = 0;
+					LOGGER.error("###[서버임계치API] result : {}", result);
+				}		
+				
+				/*if(result != null && !result.isEmpty()) {
 					cnt = 1;
 				} else {
 					cnt = 0;
-				}
+				}*/
 			
 			} else {
 				param.put("sn", param.get("hidCd"));
