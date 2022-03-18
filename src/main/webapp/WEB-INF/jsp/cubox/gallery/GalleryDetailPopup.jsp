@@ -29,7 +29,7 @@ $(document).ready(function() {
 	</div>
 	<div class="box_w2">
 		<div class="com_box_img" align="center">
-			<img id="image1" src='./getImage.do?path=${detail.image_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
+			<img id="image1" src='../history/getImage.do?gb=G&path=${detail.image_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
 		</div>
 		<div class="img_title" style="width:100%;">등록이미지</div>
 	</div>

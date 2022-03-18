@@ -1,5 +1,7 @@
 package cubox.admin.schedule.service.impl;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -18,8 +20,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleServiceImpl.class);
 	
 	@Override
-	public int insertStatCrttDay(String sBaseDe) throws Exception {
-		return scheduleDAO.insertStatCrttDay(sBaseDe);
+	public int insertStatCrttDay(Map<String, String> param) throws Exception {
+		return scheduleDAO.insertStatCrttDay(param);
 	}
 	
 	@Override

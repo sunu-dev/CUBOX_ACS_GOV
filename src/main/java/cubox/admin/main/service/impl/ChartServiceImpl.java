@@ -18,13 +18,13 @@ public class ChartServiceImpl extends EgovAbstractServiceImpl implements ChartSe
 	private ChartDAO chartDAO;
 	
 	@Override
-	public List<Map<String, Object>> selectMainChart01() throws Exception {
-		return chartDAO.selectMainChart01();
+	public List<Map<String, Object>> selectMainChart01(Map<String, String> param) throws Exception {
+		return chartDAO.selectMainChart01(param);
 	}
 	
 	@Override
-	public Map<String, Object> selectMainChart02() throws Exception {
-		return chartDAO.selectMainChart02();
+	public Map<String, Object> selectMainChart02(Map<String, String> param) throws Exception {
+		return chartDAO.selectMainChart02(param);
 	}
 
 

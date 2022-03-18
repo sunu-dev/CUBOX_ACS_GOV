@@ -48,5 +48,9 @@ public class HistoryDAO extends EgovAbstractMapper {
 	public List<Map<String, String>> selectMainIdentifyHist(Map<String, Object> param) throws Exception {
 		return selectList(sqlNameSpace+"selectMainIdentifyHist", param);
 	}
+	
+	public List<Map<String, String>> selectMainVerifyHist(Map<String, Object> param) throws Exception {
+		return selectList(sqlNameSpace+"selectMainVerifyHist", param);
+	}
 
 }

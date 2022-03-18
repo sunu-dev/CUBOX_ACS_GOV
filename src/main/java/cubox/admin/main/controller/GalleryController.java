@@ -125,6 +125,8 @@ public class GalleryController {
 		return "cubox/gallery/GalleryDetailPopup";
 	}	
 
+	/**
+	 * 2022-03-17 /history/getImage.do로 통합 
 	@RequestMapping(value="/gallery/getImage.do")
 	public ResponseEntity<byte[]> getImage(@RequestParam("path") String filePath) throws Exception {
 		byte[] byteArray = null;
@@ -142,6 +144,6 @@ public class GalleryController {
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
 		return new ResponseEntity<byte[]>(byteArray, headers, HttpStatus.OK);
-	}	
+	} **/	
 
 }

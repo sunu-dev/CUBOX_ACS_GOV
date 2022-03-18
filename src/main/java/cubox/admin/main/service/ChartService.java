@@ -5,7 +5,8 @@ import java.util.List;
 
 public interface ChartService {
 
-	public List<Map<String, Object>> selectMainChart01() throws Exception;
-	public Map<String, Object> selectMainChart02() throws Exception;
+	public List<Map<String, Object>> selectMainChart01(Map<String, String> param) throws Exception;
+	public Map<String, Object> selectMainChart02(Map<String, String> param) throws Exception;
+	
 
 }

@@ -1,5 +1,8 @@
 package cubox.admin.main.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +67,16 @@ public class CommonController {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("limitCnt", Integer.parseInt(StringUtil.nvl(gvMainListCnt, "10")));
 
-		List<Map<String, String>> list = historyService.selectMainIdentifyHist(param);		
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+
+		String identification_yn = StringUtil.nvl(System.getenv("FRS_IDENTIFICATION_YN"), "N");  //1:N
+		String verification_yn = StringUtil.nvl(System.getenv("FRS_VERIFICATION_YN"), "N");  //1:1
+		
+		if(!identification_yn.equals("N")) {
+			list = historyService.selectMainIdentifyHist(param);
+		} else if(!verification_yn.equals("N")) {
+			list = historyService.selectMainVerifyHist(param);
+		}
 		
 		model.addAttribute("limitCnt", param.get("limitCnt"));
 		model.addAttribute("list", list);
@@ -193,4 +205,19 @@ public class CommonController {
         responseHeaders.add("Content-Type", "text/plain; charset=utf-8");
         return new ResponseEntity<String>(obj.toString(), responseHeaders, HttpStatus.CREATED);
     }
+    
+/*    class MapComparator implements Comparator<HashMap<String, String>> {
+		 
+	    private final String key;
+	    
+	    public MapComparator(String key) {
+	        this.key = key;
+	    }
+	    
+	    @Override
+	    public int compare(HashMap<String, String> first, HashMap<String, String> second) {
+	        int result = first.get(key).compareTo(second.get(key));
+	        return result;
+	    }
+	}*/    
 }

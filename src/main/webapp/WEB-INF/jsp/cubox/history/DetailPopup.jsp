@@ -34,13 +34,13 @@ $(document).ready(function() {
 	<div class="box_w2">
 		<div class="box_w2_1a">
 			<div class="com_box_img">
-				<img id="image1" src='./getImage.do?path=${detail.image_1_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
+				<img id="image1" src='./getImage.do?gb=${gb}&path=${detail.image_1_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
 			</div>
 			<div class="img_title" style="width:400px;">이미지 1</div>
 		</div>
 		<div class="box_w2_2a">
 			<div class="com_box_img">
-				<img id="image2" src='./getImage.do?path=${detail.image_2_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
+				<img id="image2" src='./getImage.do?gb=${gb}&path=${detail.image_2_path}' alt="" onerror="this.src='/images/empty_photo.png'" style="width: 400px; height: 430px; object-fit: contain;">
 			</div>
 			<div class="img_title" style="width:400px;">이미지 2</div>		
 		</div>

@@ -4,9 +4,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <jsp:include page="/WEB-INF/jsp/cubox/common/checkPasswd.jsp" flush="false"/>
 <%
-String gvHistoryImageGb = System.getenv("FRS_HISTORY_IMAGE_GB");
-if(gvHistoryImageGb == null) gvHistoryImageGb = "N";
-pageContext.setAttribute("gvHistoryImageGb", gvHistoryImageGb);
+String gvLogGb = System.getenv("FRS_IDENTIFICATION_LOG_GB");
+if(gvLogGb == null) gvLogGb = "N";
+pageContext.setAttribute("gvLogGb", gvLogGb);
 %>
 <script type="text/javascript">
 //$(window).bind("beforeunload", function (e){});
@@ -66,7 +66,7 @@ function pageSearch(page){
 	frmSearch.submit();	
 }
 
-<c:if test="${gvHistoryImageGb ne 'N'}">
+<c:if test="${gvLogGb ne 'N'}">
 function fnDetail(str) {
 	var $form = $("<form></form>");
 	$form.attr("method", "post");
@@ -166,9 +166,9 @@ function fnDetail(str) {
 				<c:if test="${list.result_cd == 1}"><c:set var="vFontColor" value="font-color_E" /></c:if>				
 				<tr>
 					<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1)  + ( (pagination.curPage - 1)  *  pagination.recPerPage ) }</td>
-					<c:if test="${gvHistoryImageGb ne 'N'}">
+					<c:if test="${gvLogGb ne 'N'}">
 					<td><a style="cursor: pointer;" onclick="fnDetail('${list.sn}')"><c:out value="${list.request_dt}"/></a></td>
-					</c:if><c:if test="${gvHistoryImageGb eq 'N'}">
+					</c:if><c:if test="${gvLogGb eq 'N'}">
 					<td><c:out value="${list.request_dt}"/></td>
 					</c:if>
 					<td><c:out value="${list.face_id}"/></td>

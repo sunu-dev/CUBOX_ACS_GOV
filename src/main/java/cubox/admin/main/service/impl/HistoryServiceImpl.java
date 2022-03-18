@@ -62,5 +62,10 @@ public class HistoryServiceImpl extends EgovAbstractServiceImpl implements Histo
 	public List<Map<String, String>> selectMainIdentifyHist(Map<String, Object> param) throws Exception {
 		return historyDAO.selectMainIdentifyHist(param);
 	}
+	
+	@Override
+	public List<Map<String, String>> selectMainVerifyHist(Map<String, Object> param) throws Exception {
+		return historyDAO.selectMainVerifyHist(param);
+	}	
 
 }

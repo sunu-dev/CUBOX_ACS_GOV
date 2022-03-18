@@ -106,4 +106,10 @@
 		 limit #{limitCnt}
 	</select>	
 	
+	<select id="selectMainVerifyHist" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectVerifyHistColumns" />
+		 order by request_dt desc
+		 limit #{limitCnt}
+	</select>	
+	
 </mapper>

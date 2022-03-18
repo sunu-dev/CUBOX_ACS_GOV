@@ -184,6 +184,7 @@ public class HistoryController {
         Map<String, String> detail = historyService.selectIdentifyHistInfo(param);
 		
 		model.addAttribute("detail", detail);
+		model.addAttribute("gb", "I");
 		
 		return "cubox/history/DetailPopup";
 	}
@@ -316,20 +317,29 @@ public class HistoryController {
         Map<String, String> detail = historyService.selectVerifyHistInfo(param);
 		
 		model.addAttribute("detail", detail);
+		model.addAttribute("gb", "V");
 		
 		return "cubox/history/DetailPopup";
 	}
 	
 	@RequestMapping(value="/history/getImage.do")
-	public ResponseEntity<byte[]> getImage(@RequestParam("path") String filePath) throws Exception {
+	public ResponseEntity<byte[]> getImage(@RequestParam("path") String filePath, @RequestParam("gb") String gb) throws Exception {
 		byte[] byteArray = null;
 		
-		String gvHistoryImageGb = System.getenv("FRS_HISTORY_IMAGE_GB"); 
-		LOGGER.debug("###[getImage] gvHistoryImageGb/filePath : ({}){}", gvHistoryImageGb, filePath);		
+		String gvLogGb = "N";
+		if(gb.equals("G")) {
+			gvLogGb = System.getenv("FRS_GALLERY_IMAGE_GB");
+		} else if(gb.equals("I")) {
+			gvLogGb = System.getenv("FRS_IDENTIFICATION_LOG_GB");
+		} else if(gb.equals("V")) {
+			gvLogGb = System.getenv("FRS_VERIFICATION_LOG_GB");
+		}
 		
-		if(gvHistoryImageGb.equals("S3")) {
+		LOGGER.debug("###[getImage] gb/gvLogGb/filePath : ({}/{}){}", gb, gvLogGb, filePath);
+		
+		if(gvLogGb.equals("S3")) {
 			byteArray = S3GetImage.getImage(filePath);	
-		} else if(gvHistoryImageGb.equals("F")) {
+		} else if(gvLogGb.equals("F")) {
 			File file = new File(filePath);
 			byteArray = FileUtils.readFileToByteArray(file);
 		}

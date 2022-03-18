@@ -3,22 +3,23 @@
 
 <mapper namespace="schedule">
 	
-	<insert id="insertStatCrttDay" parameterType="String">
-	<![CDATA[
+	<insert id="insertStatCrttDay" parameterType="HashMap">
 		delete from stat_crtt_day where stat_de = replace(#{base_de}, '-', '');
 			
-		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, batch_dt)
+		<if test='identification_yn == "Y"'><![CDATA[			
+		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, crtt_cl, batch_dt)
 		select stat_de
 		     , sum(requst_cnt) requst_cnt
 		     , sum(succes_cnt) succes_cnt
 		     , sum(failr_cnt) failr_cnt
+		     , 'I'
 		     , current_timestamp() batch_dt
 		from (
 			select date_format(request_dt, '%Y%m%d') stat_de
 			     , count(1) requst_cnt
 			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
 			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
-			  from history
+			  from frs_history_iden
 			 where request_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
 			   and request_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)
 			 group by date_format(request_dt, '%Y%m%d')
@@ -26,7 +27,29 @@
 			select replace(#{base_de}, '-', ''), 0, 0, 0
 			) t
 		 group by stat_de;
-	]]>
+		]]></if>
+		<if test='verification_yn == "Y"'><![CDATA[	
+		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, crtt_cl, batch_dt)
+		select stat_de
+		     , sum(requst_cnt) requst_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , sum(failr_cnt) failr_cnt
+		     , 'V'
+		     , current_timestamp() batch_dt
+		from (
+			select date_format(request_dt, '%Y%m%d') stat_de
+			     , count(1) requst_cnt
+			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
+			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
+			  from frs_history_veri
+			 where request_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
+			   and request_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)
+			 group by date_format(request_dt, '%Y%m%d')
+			 union all
+			select replace(#{base_de}, '-', ''), 0, 0, 0
+			) t
+		 group by stat_de;		 
+		]]></if>
 	</insert>
 	
 	<insert id="insertStatGlryDay" parameterType="String">
@@ -40,14 +63,14 @@
 		     , sum(failr_cnt) failr_cnt
 		     , current_timestamp()
 		 from (
-			select date_format(create_dt, '%Y%m%d') stat_de
+			select date_format(regist_dt, '%Y%m%d') stat_de
 			     , count(1) regist_cnt
 			     , sum(case when feature is null or trim(feature) = '' then 0 else 1 end) succes_cnt
 			     , sum(case when feature is null or trim(feature) = '' then 1 else 0 end) failr_cnt 
-			  from gallery    
-			 where create_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
-			   and create_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)		  
-			group by date_format(create_dt, '%Y%m%d')
+			  from frs_gallery    
+			 where regist_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
+			   and regist_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)		  
+			group by date_format(regist_dt, '%Y%m%d')
 			 union all
 			select replace(#{base_de}, '-', ''), 0, 0, 0
 			) t

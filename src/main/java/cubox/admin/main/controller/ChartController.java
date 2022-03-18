@@ -1,5 +1,6 @@
 package cubox.admin.main.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import cubox.admin.cmmn.util.StringUtil;
 import cubox.admin.main.service.ChartService;
 
 @Controller
@@ -19,14 +21,21 @@ public class ChartController {
 
 	@Resource(name = "chartService")
 	private ChartService chartService;
+	
+	//String gvIdentificationYn = StringUtil.nvl(System.getenv("FRS_IDENTIFICATION_YN"), "N");  //1:N
+	//String gvVerificationYn = StringUtil.nvl(System.getenv("FRS_VERIFICATION_YN"), "N");  //1:1	
 
 	@ResponseBody
 	@RequestMapping(value="/main/chart01.do")
-	public ModelAndView chart01(@RequestParam Map<String, Object> param, HttpServletRequest request) throws Exception {
+	public ModelAndView chart01(HttpServletRequest request) throws Exception {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("jsonView");
 		
-		List<Map<String, Object>> list = chartService.selectMainChart01();
+		/*Map<String, String> param = new HashMap<String, String>();
+		param.put("identification_yn", gvIdentificationYn);
+		param.put("verification_yn", gvVerificationYn);
+		System.out.println("[char01] param : "+param);*/
+		List<Map<String, Object>> list = chartService.selectMainChart01(null);
 		modelAndView.addObject("list", list);
 
 		return modelAndView;
@@ -34,11 +43,15 @@ public class ChartController {
 
 	@ResponseBody
 	@RequestMapping(value="/main/chart02.do")
-	public ModelAndView chart02(@RequestParam Map<String, Object> param, HttpServletRequest request) throws Exception {
+	public ModelAndView chart02(HttpServletRequest request) throws Exception {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("jsonView");
 		
-		Map<String, Object> data = chartService.selectMainChart02();
+		/*Map<String, String> param = new HashMap<String, String>();
+		param.put("identification_yn", gvIdentificationYn);
+		param.put("verification_yn", gvVerificationYn);
+		System.out.println("[char02] param : "+param);*/
+		Map<String, Object> data = chartService.selectMainChart02(null);
 		modelAndView.addObject("data", data);
 
 		return modelAndView;

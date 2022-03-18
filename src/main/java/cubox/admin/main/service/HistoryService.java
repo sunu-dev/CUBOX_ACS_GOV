@@ -18,5 +18,6 @@ public interface HistoryService {
 	public List<ExcelVO> selectVerifyHistXls(Map<String, Object> param) throws Exception;	
 	
 	public List<Map<String, String>> selectMainIdentifyHist(Map<String, Object> param) throws Exception;
+	public List<Map<String, String>> selectMainVerifyHist(Map<String, Object> param) throws Exception;
 
 }

@@ -5,6 +5,8 @@ import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -31,17 +33,17 @@ public class CuboxProperties {
 		
 		//LOGGER.debug("getProperty : {} = {}", GLOBALS_PROPERTIES_FILE, keyName);
 		
-		System.out.println("### FRS_DB_URL : "+System.getenv("FRS_DB_URL"));
-		
-		/* 환경변수 읽기
-		System.out.println("### getenv ==> "+System.getenv());
-		System.out.println("### 1) spring.profiles.active : "+System.getProperty("spring.profiles.active"));		
-		System.out.println("### 2) FRS_ACTIVE  : "+System.getenv("FRS_ACTIVE"));
-		System.out.println("### 3) FRS_DB_URL  : "+System.getenv("FRS_DB_URL"));
-		System.out.println("### 4) FRS_DB_ID   : "+System.getenv("FRS_DB_USERNAME"));
-		System.out.println("### 5) FRS_DB_PW   : "+System.getenv("FRS_DB_PASSWORD"));
-		System.out.println("### 6) FRS_API_URL : "+System.getenv("FRS_API_URL"));
-		System.out.println("### 7) FRS_API_KEY : "+System.getenv("FRS_API_KEY"));*/
+		String mode = System.getProperty("spring.profiles.active");
+		System.out.println(String.format("###[%s][FRS_DB_URL] %s", mode, System.getenv("FRS_DB_URL")));
+		if(StringUtil.nvl(mode).equals("local")) {
+			// 환경변수 읽기
+			for(String key : System.getenv().keySet()) {
+				if(key.startsWith("FRS_")) {
+					System.out.println(String.format("###[%s] %s", key, System.getenv(key)));
+				}
+			}
+			System.out.println();
+		}
 		
 		FileInputStream fis = null;
 		try {

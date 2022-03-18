@@ -6,6 +6,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -49,9 +51,14 @@ public class ScheduleResve {
 		
 		String sBaseDe = commonUtils.getStringDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
 		
-		LOGGER.debug("######### [batchCrttDayStat] start sBaseDe:{}", sBaseDe);
-		int cnt = scheduleService.insertStatCrttDay(sBaseDe);
-		LOGGER.debug("######### [batchCrttDayStat] end!! sBaseDe:{}, 처리건수:{}", sBaseDe, cnt);		
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("base_de", sBaseDe);
+		param.put("identification_yn", StringUtil.nvl(System.getenv("FRS_IDENTIFICATION_YN"), "N"));
+		param.put("verification_yn", StringUtil.nvl(System.getenv("FRS_VERIFICATION_YN"), "N"));
+		
+		LOGGER.debug("######### [batchCrttDayStat] start param:{}", param);
+		int cnt = scheduleService.insertStatCrttDay(param);
+		LOGGER.debug("######### [batchCrttDayStat] end!! param:{}, 처리건수:{}", param, cnt);		
 	}
 		
 	private String getLocalServerIp(){
