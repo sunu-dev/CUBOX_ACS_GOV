@@ -5,6 +5,11 @@
 <head>
 <title><spring:message code="site.title"/></title>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<% 
+String str = System.getProperty("spring.profiles.active");
+if(!str.equals("local")) { %>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<% } %>
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0">
 </head>
 <frameset rows="*" cols="*" framespacing="0" frameborder="no" border="0">
