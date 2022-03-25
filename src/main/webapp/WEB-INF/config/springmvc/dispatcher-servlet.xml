@@ -52,7 +52,9 @@
 	<bean id="loginCheckInterceptor" class="cubox.admin.cmmn.util.SessionCheck" />
 
 	<!-- 세션을 이용한 Locale 이용시-->
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="ko"/>
+	</bean>
 	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 		<property name="paramName" value="language"/>
 	</bean>

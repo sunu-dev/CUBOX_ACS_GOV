@@ -13,7 +13,8 @@
 		     , result_cd 
 		     , case when result_cd = 1 then '성공' when result_cd = 0 then '실패' else '갤러리없음' end as result_nm 
 		     , image_1_path
-		     , image_2_path 
+		     , image_2_path
+		     , case when face_id is null or face_id = '' then device_id else face_id end as main_uuid  
 		  from frs_history_iden
 	]]></sql>
 	
@@ -61,7 +62,8 @@
 		     , result_cd 
 		     , case when result_cd = 1 then '성공' when result_cd = 0 then '실패' else '갤러리없음' end as result_nm 
 		     , image_1_path
-		     , image_2_path 
+		     , image_2_path
+		     , device_id as main_uuid 
 		  from frs_history_veri
 	]]></sql>
 	

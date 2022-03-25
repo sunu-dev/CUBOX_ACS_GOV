@@ -259,7 +259,7 @@ function pageSearch(page){
 					<th><input type="checkbox" id="chkAll" name="chkAll" value="Y"></th>
 					<th>순번</th>
 					<th>등록일시</th>
-					<th>단말기ID</th>					
+					<th>UUID</th>					
 					<th>단말기유형</th>
 					<th>제조사</th>
 					<th>운영체제</th>

@@ -1,20 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ page import="cubox.admin.cmmn.util.StringUtil" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <jsp:include page="/WEB-INF/jsp/cubox/common/checkPasswd.jsp" flush="false"/>
 <%
-String gvGalleryImageGb = System.getenv("FRS_GALLERY_IMAGE_GB");
-if(gvGalleryImageGb == null) gvGalleryImageGb = "N";
+String gvGalleryImageGb = StringUtil.nvl(System.getenv("FRS_GALLERY_IMAGE_GB"), "N");
+String gvGalleryRegistYn = StringUtil.nvl(System.getenv("FRS_GALLERY_REGIST_YN"), "N");
 pageContext.setAttribute("gvGalleryImageGb", gvGalleryImageGb);
+pageContext.setAttribute("gvGalleryRegistYn", gvGalleryRegistYn);
 %>
 <script type="text/javascript">
-
 //$(window).bind("beforeunload", function (e){});
- 
 $(function(){ 
 	$(".title_tx").html("${menuNm}");
-	
+
 	$('#srchDtFr').datetimepicker({
 		timepicker:false,
 		format:'Y-m-d'
@@ -33,6 +33,12 @@ $(function(){
 	$("#srchRecPerPage").change(function(){
 		pageSearch();
 	});	
+	
+	<c:if test="${gvGalleryRegistYn eq 'Y'}" >
+	$("#btnRegist").click(function(){
+		openPopup('./registPopup.do', 'winRegistPopup', 460, 655);
+	});
+	</c:if>
 });
 
 function fnSearch() {
@@ -61,7 +67,7 @@ function pageSearch(page){
 	frmSearch.action = "${menuUrl}";
 	frmSearch.submit();	
 }
-
+<c:if test="${gvGalleryImageGb ne 'N'}">
 function fnDetail(str) {
 	var $form = $("<form></form>");
 	$form.attr("method", "post");
@@ -72,18 +78,17 @@ function fnDetail(str) {
 	var vid = $("<input type='hidden' id='srchSn' name='srchSn' value='"+str+"'>");
 	$form.append(vid);
 	
-	openPopup('', 'winDetailPopup', 600, 640);
+	openPopup('', 'winDetailPopup', 600, 665);
 	$form.submit();
 }
-
+</c:if>
 </script>
 <form id="frmSearch" name="frmSearch" method="post" onsubmit="return false;">
 <input type="hidden" id="srchPage" name="srchPage" value="${pagination.curPage}">
 <%-- <input type="hidden" id="chkValueArray" name="chkValueArray" value="face_id,feature_yn,regist_dt" /> 
 <input type="hidden" id="chkTextArray" name="chkTextArray" value="고유번호,이미지여부,등록일시"> --%>
 <input type="hidden" id="initYn" name="initYn" value="N">
- 
- <!--검색박스 -->
+<!--검색박스 -->
 <div class="search_box mb_20">
 	<div class="search_in_bline">
 		<div class="comm_search mr_20">
@@ -113,7 +118,9 @@ function fnDetail(str) {
 			</select>
 		</div>
 		<div class="r_btnbox  mb_10">
-			<%-- <button type="button" class="btn_excel" data-toggle="modal" id="btnExcel">엑셀다운로드</button> --%>
+		<c:if test="${gvGalleryRegistYn eq 'Y'}" >
+			<button type="button" class="btn_middle color_basic" id="btnRegist">갤러리 등록</button>
+		</c:if>
 		</div>
 	</div>
 	<!--버튼 -->

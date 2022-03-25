@@ -23,8 +23,7 @@ import org.apache.commons.codec.binary.Base64;
  
 public class AES256Util {
 
-	public static byte[] ivBytes = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-	
+	public static String frsCipherIV = System.getenv("FRS_Cipher_IV");
 	
 	/**
 	 * 일반 문자열을 지정된 키를 이용하여 AES256 으로 암호화
@@ -36,7 +35,7 @@ public class AES256Util {
 	public String strEncode(String str, String key)	throws java.io.UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,	IllegalBlockSizeException, BadPaddingException {
 		
 		byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = null;
 		
@@ -46,10 +45,10 @@ public class AES256Util {
 		return Base64.encodeBase64String(cipher.doFinal(textBytes));
 	}
 	
-public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,	IllegalBlockSizeException, BadPaddingException {
+	public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,	IllegalBlockSizeException, BadPaddingException {
 		
 		byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = null;
 		
@@ -72,7 +71,7 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
 		
 		byte[] textBytes = Base64.decodeBase64(str);
 		//byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		
@@ -95,7 +94,7 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
 	public String byteArrEncode(byte[] byteData, String key)	throws java.io.UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,	IllegalBlockSizeException, BadPaddingException {
 		
 //		byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = null;
 		cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -132,7 +131,7 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
 		
 		byte[] textBytes = Base64.decodeBase64(str);
 		//byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		// 개행
@@ -144,7 +143,7 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
 		
 		byte[] textBytes = Base64.decodeBase64(str);
 		//byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 		
@@ -159,7 +158,7 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
 		//System.out.println("str length : " + str.length());
 		byte[] textBytes = Base64.decodeBase64(str);
 		//byte[] textBytes = str.getBytes("UTF-8");
-		AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		AlgorithmParameterSpec ivSpec = new IvParameterSpec(frsCipherIV.getBytes("UTF-8"));
 		SecretKeySpec newKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 		//System.out.println("textBytes length : " + textBytes.length);
@@ -221,6 +220,6 @@ public byte[] aesEncode(String str, String key)	throws java.io.UnsupportedEncodi
         byte[] _temp = cipher.doFinal(imgStr.getBytes());
         return new String(_temp, 0, _temp.length);
 	}
-	
+
 	
 }

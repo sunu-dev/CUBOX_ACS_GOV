@@ -20,8 +20,9 @@ public class FrmsApiUtil {
 
 	private static FrmsApiUtil instance;
 	
-	private static String GLOBAL_API_URL = System.getenv("FRS_API_URL");//CuboxProperties.getProperty("Globals.api.url");
-	private static String GLOBAL_API_KEY = System.getenv("FRS_API_KEY");//CuboxProperties.getProperty("Globals.api.key");	
+	private static String frsApiUrl = System.getenv("FRS_API_URL");
+	private static String frsApiKeyAdmin = System.getenv("FRS_API_KEY_ADMIN");	
+	private static String frsApiKey = System.getenv("FRS_API_KEY");	
 
 	static {
 		instance = new FrmsApiUtil();
@@ -40,32 +41,24 @@ public class FrmsApiUtil {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		HttpURLConnection restConn = null;
 		
-		String url = GLOBAL_API_URL + action;
-		LOGGER.debug("###[FrmsApiUtil] 0) url : {}, method : {}", url, method);
+		String url = frsApiUrl + action;
+		LOGGER.debug("###[FrmsApiUtil] 0) url : [{}] {}", method, url);
 		
 		try {
-			/*
-			String username = GLOBAL_PARKING_API_ID;
-			String password = GLOBAL_PARKING_API_PASSWORD;
-			
-			String auth = username + ":" + password;
-			byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
-			String authHeaderValue = new String(encodedAuth);
-			*/
 			
 			URL Url = new URL(url);
 			restConn = (HttpURLConnection) Url.openConnection();
 			restConn.setDoOutput(true);
 			restConn.setRequestMethod(method);
+			restConn.setRequestProperty("Accept-Charset", "UTF-8");			
 			restConn.setRequestProperty("Content-Type", "application/json");
-			restConn.setRequestProperty("Accept-Charset", "UTF-8"); 
-			//restConn.setRequestProperty("Authorization", authHeaderValue);
-			restConn.setRequestProperty("Admin-Api-Key", GLOBAL_API_KEY);
+			restConn.setRequestProperty("Admin-Api-Key", frsApiKeyAdmin);
+			restConn.setRequestProperty("X-Api-Key", frsApiKey);
 			restConn.setConnectTimeout(50000);
 			restConn.setReadTimeout(50000);
 			
 			OutputStream restOs = restConn.getOutputStream();
-			restOs.write(reqBody.getBytes("UTF-8"));
+			restOs.write(StringUtil.nvl(reqBody).getBytes("UTF-8"));
 			restOs.flush();
 
 			int responseCode = restConn.getResponseCode();  //200:정상, 200외:에러

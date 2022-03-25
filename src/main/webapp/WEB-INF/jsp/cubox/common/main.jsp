@@ -276,7 +276,7 @@ function fnGoToPage(page){
 	<div class="inbox3">
 		<div class="title">얼굴인증이력 (최근 <c:out value="${limitCnt}" />건)
 			<div class="more">
-				<img src="/img/main/icon_more.png" alt="" onclick="fnGoToPage('/history/idenList.do');"/>
+				<img src="/img/main/icon_more.png" alt="" onclick="fnGoToPage('${goToPageUrl}');"/>
 			</div>
 		</div>
 		<div class="tb_outbox">
@@ -293,7 +293,7 @@ function fnGoToPage(page){
 					<tr>
 						<th>순번</th>
 						<th>인증요청일시</th>
-						<th>단말기ID</th>
+						<th><c:out value="${mainUuidTitle}"/></th>
 						<th>인증결과</th>
 						<th>매칭점수</th>
 						<th>기준점수</th>
@@ -311,7 +311,7 @@ function fnGoToPage(page){
 					<tr>
 						<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1)  + ( (pagination.curPage - 1)  *  pagination.recPerPage ) }</td>
 						<td><c:out value="${list.request_dt}"/></td>
-						<td><c:out value="${list.device_id}"/></td>
+						<td><c:out value="${list.main_uuid}"/></td>
 						<td><c:out value="${list.result_nm}"/></td>
 						<td><font class="${vFontColor}"><c:out value="${list.score}"/></font></td>
 						<td><font class="font-color_V"><c:out value="${list.threshold}"/></font></td>

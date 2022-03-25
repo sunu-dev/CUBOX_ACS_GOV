@@ -1,29 +1,33 @@
 package cubox.admin.main.controller;
 
-import java.io.File;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
+import cubox.admin.cmmn.util.AES256Util;
 import cubox.admin.cmmn.util.CommonUtils;
-import cubox.admin.cmmn.util.S3GetImage;
+import cubox.admin.cmmn.util.EgovMessageSource;
+import cubox.admin.cmmn.util.FrmsApiUtil;
 import cubox.admin.cmmn.util.StringUtil;
 import cubox.admin.main.service.CodeService;
 import cubox.admin.main.service.GalleryService;
@@ -53,6 +57,9 @@ public class GalleryController {
 
 	@Resource(name="galleryService")
 	private GalleryService galleryService;
+	
+	@Resource(name="egovMessageSource")
+	private EgovMessageSource egovMessageSource;	
 
 	@RequestMapping(value="/gallery/list.do")
 	public String list(ModelMap model, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
@@ -124,6 +131,111 @@ public class GalleryController {
 		
 		return "cubox/gallery/GalleryDetailPopup";
 	}	
+	
+	@RequestMapping(value="/gallery/registPopup.do")
+	public String registPopup() throws Exception {
+		return "cubox/gallery/GalleryRegistPopup";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/gallery/regist.do")
+	public ModelAndView regist(MultipartHttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
+		LoginVO loginVO = (LoginVO)request.getSession().getAttribute("loginVO");
+
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("jsonView");
+
+		LOGGER.debug("###[regist] param : {}", param);
+		
+		String frsCipherKey = System.getenv("FRS_Cipher_Key");
+
+		try {
+			String method = "POST";
+			String action = "/v1/faces/image-json";
+			
+			JSONObject json = new JSONObject();
+			json.put("faceId", StringUtil.nvl(param.get("faceId")));
+			
+			MultipartFile file = null;
+			Iterator<String> iterator = request.getFileNames();
+			AES256Util aes256 = new AES256Util();
+
+			if(iterator.hasNext()) {
+				file = request.getFile(iterator.next());
+				LOGGER.debug("### [file] iterator : " + file.getSize());
+				LOGGER.debug("### [file] filename : " + file.getOriginalFilename());
+			}
+			if(file != null) {
+				System.out.println("========= [file] getBytes ==================");
+				System.out.println(file.getBytes());
+
+				String imgString = aes256.strEncode(aes256.byteArrToBase64(file.getBytes()), frsCipherKey);
+				LOGGER.debug("========= [file] imgString ==================");
+				LOGGER.debug(imgString.substring(0,  100));
+
+				json.put("image", imgString);
+
+			} else {
+				throw new RuntimeException("첨부파일 없음!!");
+			}			
+			
+			String reqBody = json.toJSONString();
+			
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			result = FrmsApiUtil.getFrmsApiReq(reqBody, action, method);  
+			LOGGER.debug("###[갤러리등록API] result : {}", result);
+			
+		
+			if(StringUtil.nvl(result.get("responseCode")).equals("200")) {
+				modelAndView.addObject("result", "success");
+			} else {
+				modelAndView.addObject("result", "fail");
+				if(!StringUtil.nvl(result.get("errorCode")).equals("")) {
+					modelAndView.addObject("message", egovMessageSource.getMessage("frs.error."+StringUtil.nvl(result.get("errorCode")), request));
+				}
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			modelAndView.addObject("result", "fail");
+			modelAndView.addObject("message", e.getMessage());
+		}
+
+		return modelAndView;
+	}	
+	
+	@ResponseBody
+	@RequestMapping(value="/gallery/delete.do")
+	public ModelAndView delete(HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
+		LoginVO loginVO = (LoginVO)request.getSession().getAttribute("loginVO");
+
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("jsonView");
+
+		LOGGER.debug("###[delete] param : {}", param);
+
+		try {
+			String method = "DELETE";
+			String action = "/v1/faces/"+URLEncoder.encode(StringUtil.nvl(param.get("faceId")), "UTF-8");
+			
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			result = FrmsApiUtil.getFrmsApiReq(null, action, method);  
+			LOGGER.debug("###[갤러리삭제API] result : {}", result);
+		
+			if(StringUtil.nvl(result.get("responseCode")).equals("200")) {
+				modelAndView.addObject("result", "success");
+			} else {
+				modelAndView.addObject("result", "fail");
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			modelAndView.addObject("result", "fail");
+			modelAndView.addObject("message", e.getMessage());
+		}
+
+		return modelAndView;
+	}		
 
 	/**
 	 * 2022-03-17 /history/getImage.do로 통합 

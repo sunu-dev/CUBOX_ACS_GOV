@@ -26,6 +26,12 @@
 			<value>60</value>
 		</property>
 	</bean>
+	
+	<bean id="egovMessageSource" class="cubox.admin.cmmn.util.EgovMessageSource"> 
+        <property name="reloadableResourceBundleMessageSource">
+            <ref bean="messageSource" />
+        </property> 
+    </bean>		
 
 	<bean id="leaveaTrace" class="egovframework.rte.fdl.cmmn.trace.LeaveaTrace">
 		<property name="traceHandlerServices">

@@ -7,6 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <% 
 String str = System.getProperty("spring.profiles.active");
+System.out.println("   index.jsp : "+str);
 if(!str.equals("local")) { %>
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <% } %>
@@ -16,6 +17,6 @@ if(!str.equals("local")) { %>
 <frame src="/login.do" name="index" scrolling="yes" noresize>
 </frameset>
 <noframes>
-<body></body>
+<body>[03/25/2022] CUBOX_FRS_MANAGEMENT_ADMIN_PAGE</body>
 </noframes>
 </html>

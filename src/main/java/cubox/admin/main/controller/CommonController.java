@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -56,7 +57,7 @@ public class CommonController {
 	@RequestMapping(value="/login.do")
 	public String login(ModelMap model, RedirectAttributes redirectAttributes) throws Exception {
 		LoginManager loginManager = LoginManager.getInstance();  //LoginManager
-        model.addAttribute("userCnt", Integer.valueOf(loginManager.getUserCount()));  //LoginManager		
+        model.addAttribute("userCnt", Integer.valueOf(loginManager.getUserCount()));  //LoginManager
 		
 		return "cubox/common/login";
 	}
@@ -72,10 +73,14 @@ public class CommonController {
 		String identification_yn = StringUtil.nvl(System.getenv("FRS_IDENTIFICATION_YN"), "N");  //1:N
 		String verification_yn = StringUtil.nvl(System.getenv("FRS_VERIFICATION_YN"), "N");  //1:1
 		
-		if(!identification_yn.equals("N")) {
+		if(identification_yn.equals("Y")) {
 			list = historyService.selectMainIdentifyHist(param);
-		} else if(!verification_yn.equals("N")) {
+			model.addAttribute("mainUuidTitle", "Face ID");
+			model.addAttribute("goToPageUrl", "/history/idenList.do");
+		} else if(verification_yn.equals("Y")) {
 			list = historyService.selectMainVerifyHist(param);
+			model.addAttribute("mainUuidTitle", "UUID");
+			model.addAttribute("goToPageUrl", "/history/veriList.do");
 		}
 		
 		model.addAttribute("limitCnt", param.get("limitCnt"));

@@ -34,12 +34,12 @@ public class CuboxProperties {
 		//LOGGER.debug("getProperty : {} = {}", GLOBALS_PROPERTIES_FILE, keyName);
 		
 		String mode = System.getProperty("spring.profiles.active");
-		System.out.println(String.format("###[%s][FRS_DB_URL] %s", mode, System.getenv("FRS_DB_URL")));
+		System.out.println(String.format("### [%s][FRS_DB_URL] %s", mode, System.getenv("FRS_DB_URL")));
 		if(StringUtil.nvl(mode).equals("local")) {
 			// 환경변수 읽기
 			for(String key : System.getenv().keySet()) {
 				if(key.startsWith("FRS_")) {
-					System.out.println(String.format("###[%s] %s", key, System.getenv(key)));
+					System.out.println(String.format("### %s = %s", key, System.getenv(key)));
 				}
 			}
 			System.out.println();
