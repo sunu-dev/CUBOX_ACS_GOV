@@ -46,6 +46,8 @@ $(function(){
 		$("#srchStatus").val("");
 		$("#srchUuid").val("");
 		$("#srchUserId").val("");
+		$("#srchDeviceNm").val("");
+		$("#srchGroupCd").val("");
 	});
 
 	$("#chkAll").click(function(){
@@ -117,6 +119,8 @@ $(function(){
 	
 	$("#srchUserId").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});	
 	$("#srchUuid").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});	
+	$("#srchDeviceNm").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});	
+	$("#srchGroupCd").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});	
 });
 
 function fnEdit(str) {
@@ -130,6 +134,8 @@ function fnEdit(str) {
 				$("#hidId").val(data.detail.sn);
 				//$("#tdUserId").html(data.detail.user_id);
 				$("#tdUuid").html(data.detail.device_id);
+				$("#tdDeviceNm").html(data.detail.device_nm);
+				$("#tdGroupCd").html(data.detail.group_cd);
 				$("#tdType").html(data.detail.type_nm);
 				$("#tdManufacture").html(data.detail.manufacture_nm);
 				$("#tdOs").html(data.detail.os_nm);
@@ -166,12 +172,14 @@ function fnClearDetail() {
 	$("#hidId").val("");
 	//$("#tdUserId").html("");
 	$("#tdUuid").html("");
+	$("#tdDeviceNm").html("");
+	$("#tdGroupCd").html("");
 	$("#tdType").html("");
 	$("#tdManufacture").html("");
 	$("#tdOs").html("");
 	$("#tdIp").html("");
 	$("#tdMac").html("");
-	$("#tdStatus").html("");	
+	$("#tdStatus").html("");
 	$("#tdResgitDt").html("");
 	$("#tdUpdtDt").html("");
 		
@@ -347,8 +355,16 @@ function pageSearch(page){
 	<div class="search_in_bline">
 		<div class="comm_search mr_20">
 			<div class="title">UUID</div>
-			<input type="text" id="srchUuid" name="srchUuid" class="w_340px input_com" placeholder="UUID" value='<c:out value="${params.srchUuid}"/>'>
+			<input type="text" id="srchUuid" name="srchUuid" class="w_200px input_com" placeholder="UUID" value='<c:out value="${params.srchUuid}"/>'>
 		</div>
+		<div class="comm_search mr_20">
+			<div class="title">단말기명</div>
+			<input type="text" id="srchDeviceNm" name="srchDeviceNm" class="w_142px input_com" placeholder="단말기명" value='<c:out value="${params.srchDeviceNm}"/>'>
+		</div>
+		<div class="comm_search mr_20">
+			<div class="title">그룹코드</div>
+			<input type="text" id="srchGroupCd" name="srchGroupCd" class="w_142px input_com" placeholder="그룹코드" value='<c:out value="${params.srchGroupCd}"/>'>
+		</div>	
 		<div class="comm_search mr_20">
 			<div class="title">상태</div>
 			<select name="srchStatus" id="srchStatus" size="1" class="w_110px input_com">
@@ -356,7 +372,7 @@ function pageSearch(page){
 				<option value="A" <c:if test="${params.srchStatus eq 'A'}">selected</c:if>>ACTIVE</option>
 				<option value="I" <c:if test="${params.srchStatus eq 'I'}">selected</c:if>>INACTIVE</option>
 			</select>
-		</div>		
+		</div>
 	</div>	
 </div>
 <!--//검색박스 -->
@@ -386,7 +402,9 @@ function pageSearch(page){
 			<colgroup>
 				<col width="3%">
 				<col width="3%">
-				<col width="24%">
+				<col width="10%"><%--UUID --%>
+				<col width="7%"><%--단말기명 --%>
+				<col width="7%"><%--그룹코드 --%>
 				<col width="7%">
 				<col width="7%">
 				<%-- <col width="6%">
@@ -402,6 +420,8 @@ function pageSearch(page){
 					<th><input type="checkbox" id="chkAll" name="chkAll" value="Y"></th>
 					<th>순번</th>
 					<th>UUID</th>
+					<th>단말기명</th>
+					<th>그룹코드</th>
 					<th>단말기유형</th>
 					<th>제조사</th>
 					<%-- <th>운영체제</th>
@@ -416,7 +436,7 @@ function pageSearch(page){
 			<tbody>
 				<c:if test="${list == null || fn:length(list) == 0}">
 				<tr>
-					<td class="h_35px" colspan="10">조회 목록이 없습니다.</td>
+					<td class="h_35px" colspan="12">조회 목록이 없습니다.</td>
 				</tr>
 				</c:if>
 				<c:forEach items="${list}" var="list" varStatus="status">
@@ -425,6 +445,8 @@ function pageSearch(page){
 						<input type="hidden" name="status" value="<c:out value="${list.status}"/>"></td>
 					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if>${(pagination.totRecord - (pagination.totRecord-status.index)+1) + ((pagination.curPage - 1) * pagination.recPerPage)}<c:if test="${list.status eq 'I'}"></font></c:if></td>
 					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.device_id}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
+					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.device_nm}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
+					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.group_cd}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
 					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.type_nm}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
 					<td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.manufacture_nm}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
 					<%-- <td><c:if test="${list.status eq 'I'}"><font class="font-color_H"></c:if><c:out value="${list.os_nm}"/><c:if test="${list.status eq 'I'}"></font></c:if></td>
@@ -463,6 +485,12 @@ function pageSearch(page){
 					<tr>
 						<th>UUID</th>
 						<td colspan="3" id="tdUuid"></td>
+					</tr>
+					<tr>
+						<th>단말기명</th>
+						<td id="tdDeviceNm"></td>
+						<th>그룹코드</th>
+						<td id="tdGroupCd"></td>
 					</tr>
 					<tr>
 						<th>상태</th>

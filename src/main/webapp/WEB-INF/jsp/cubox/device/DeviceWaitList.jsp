@@ -26,6 +26,8 @@ $(function(){
 		$("#srchType").val("");
 		$("#srchManufacture").val("");
 		$("#srchUuid").val("");
+		$("#srchDeviceNm").val("");
+		$("#srchGroupCd").val("");
 	});
 	
 	$("#chkAll").click(function(){
@@ -63,6 +65,8 @@ $(function(){
 	});	
 	
 	$("#srchUuid").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
+	$("#srchDeviceNm").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
+	$("#srchGroupCd").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
 });
 
 function fnSave() {
@@ -188,18 +192,6 @@ function pageSearch(page){
 			<div class="sp_tx fl">~</div>
 			<label for="search-to-date"></label> <input type="text" id="srchDtTo" name="srchDtTo" class="input_datepicker w_150px  fl" name="search-to-date" placeholder="등록일자To" value='<c:out value="${params.srchDtTo}"/>' >
 		</div>
-		<div class="comm_search ml_40">
-			<div class="search_btn2" onclick="fnSearch();"></div>
-		</div>
-		<div class="comm_search ml_45">
-			<button type="button" class="comm_btn" id="btnReset">초기화</button>
-		</div>			
-	</div>
-	<div class="search_in_bline">
-		<div class="comm_search mr_20">
-			<div class="title">UUID</div>
-			<input type="text" id="srchUuid" name="srchUuid" class="w_340px input_com" placeholder="UUID " value='<c:out value="${params.srchUuid}"/>'>
-		</div>
 		<div class="comm_search mr_20">
 			<div class="title">단말기유형</div>
 			<select name="srchType" id="srchType" size="1" class="w_142px input_com">
@@ -217,7 +209,27 @@ function pageSearch(page){
 				<option value='<c:out value="${manu.cd}"/>' <c:if test="${manu.cd eq params.srchManufacture}">selected</c:if>><c:out value="${manu.cd_nm}"/></option>
 				</c:forEach>
 			</select>
-		</div>		
+		</div>
+		<div class="comm_search ml_40">
+			<div class="search_btn2" onclick="fnSearch();"></div>
+		</div>
+		<div class="comm_search ml_45">
+			<button type="button" class="comm_btn" id="btnReset">초기화</button>
+		</div>
+	</div>
+	<div class="search_in_bline">
+		<div class="comm_search mr_20">
+			<div class="title">UUID</div>
+			<input type="text" id="srchUuid" name="srchUuid" class="w_200px input_com" placeholder="UUID " value='<c:out value="${params.srchUuid}"/>'>
+		</div>
+		<div class="comm_search mr_20">
+			<div class="title">단말기명</div>
+			<input type="text" id="srchDeviceNm" name="srchDeviceNm" class="w_142px input_com" placeholder="단말기명" value='<c:out value="${params.srchDeviceNm}"/>'>
+		</div>
+		<div class="comm_search mr_20">
+			<div class="title">그룹코드</div>
+			<input type="text" id="srchGroupCd" name="srchGroupCd" class="w_142px input_com" placeholder="그룹코드" value='<c:out value="${params.srchGroupCd}"/>'>
+		</div>
 	</div>
 </div>
 <!--//검색박스 -->
@@ -244,22 +256,26 @@ function pageSearch(page){
 	<div class="tb_outbox">
 		<table class="tb_list">
 			<colgroup>
-				<col width="5%">
-				<col width="5%">
+				<col width="4%">
+				<col width="4%">
 				<col width="13%">
-				<col width="25%">
+				<col width="13%"><%--UUID--%>
 				<col width="10%">
-				<col width="9%">
-				<col width="9%">
 				<col width="10%">
-				<col width="14%">
+				<col width="8%">
+				<col width="8%">
+				<col width="8%">
+				<col width="10%">
+				<col width="12%">
 			</colgroup>	
 			<thead>
 				<tr>
 					<th><input type="checkbox" id="chkAll" name="chkAll" value="Y"></th>
 					<th>순번</th>
 					<th>등록일시</th>
-					<th>UUID</th>					
+					<th>UUID</th>
+					<th>단말기명</th>
+					<th>그룹코드</th>
 					<th>단말기유형</th>
 					<th>제조사</th>
 					<th>운영체제</th>
@@ -270,7 +286,7 @@ function pageSearch(page){
 			<tbody>
 				<c:if test="${list == null || fn:length(list) == 0}">
 				<tr>
-					<td class="h_35px" colspan="9">조회 목록이 없습니다.</td>
+					<td class="h_35px" colspan="11">조회 목록이 없습니다.</td>
 				</tr>
 				</c:if>
 				<c:forEach items="${list}" var="list" varStatus="status">
@@ -278,7 +294,9 @@ function pageSearch(page){
 					<td><input type="checkbox" name="chk" value="<c:out value="${list.sn}"/>"></td>
 					<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1) + ((pagination.curPage - 1) * pagination.recPerPage)}</td>
 					<td><c:out value="${list.regist_dt}"/></td>
-					<td><c:out value="${list.device_id}"/></td>					
+					<td><c:out value="${list.device_id}"/></td>
+					<td><c:out value="${list.device_nm}"/></td>
+					<td><c:out value="${list.group_cd}"/></td>
 					<td><c:out value="${list.type_nm}"/></td>
 					<td><c:out value="${list.manufacture_nm}"/></td>
 					<td><c:out value="${list.os_nm}"/></td>

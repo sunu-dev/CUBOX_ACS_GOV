@@ -24,11 +24,17 @@ $(function(){
 		$("#srchDtTo").val("${initVal2}");
 		$("#srchUserId").val("");
 		$("#srchUuid").val("");
+		$("#srchDeviceNm").val("");
+		$("#srchGroupCd").val("");
 	});
 
 	$("#srchRecPerPage").change(function(){
 		pageSearch();
 	});
+	
+	$("#srchUuid").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
+	$("#srchDeviceNm").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
+	$("#srchGroupCd").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
 });
 
 
@@ -75,17 +81,25 @@ function pageSearch(page){
 			<div class="sp_tx fl">~</div>
 			<label for="search-to-date"></label> <input type="text" id="srchDtTo" name="srchDtTo" class="input_datepicker w_150px  fl" name="search-to-date" placeholder="작업일자To" value='<c:out value="${params.srchDtTo}"/>' >
 		</div>
-		<div class="comm_search mr_20">
-			<div class="title">UUID</div>
-			<div class="comm_search">
-				<input type="text" id="srchUuid" name="srchUuid" class="w_340px input_com" placeholder="UUID " value='<c:out value="${params.srchUuid}"/>'>
-			</div>
-		</div>		
 		<div class="comm_search ml_40">
 			<div class="search_btn2" onclick="fnSearch();"></div>
 		</div>
 		<div class="comm_search ml_45">
 			<button type="button" class="comm_btn" id="btnReset">초기화</button>
+		</div>
+	</div>
+	<div class="search_in_bline">
+		<div class="comm_search mr_20">
+			<div class="title">UUID</div>
+			<input type="text" id="srchUuid" name="srchUuid" class="w_200px input_com" placeholder="UUID " value='<c:out value="${params.srchUuid}"/>'>
+		</div>
+		<div class="comm_search mr_20">
+			<div class="title">단말기명</div>
+			<input type="text" id="srchDeviceNm" name="srchDeviceNm" class="w_142px input_com" placeholder="단말기명" value='<c:out value="${params.srchDeviceNm}"/>'>
+		</div>
+		<div class="comm_search mr_20">
+			<div class="title">그룹코드</div>
+			<input type="text" id="srchGroupCd" name="srchGroupCd" class="w_142px input_com" placeholder="그룹코드" value='<c:out value="${params.srchGroupCd}"/>'>
 		</div>
 	</div>
 </div>
@@ -114,17 +128,21 @@ function pageSearch(page){
 	<div class="tb_outbox">
 		<table class="tb_list">
 			<colgroup>
-				<col width="5%">
-				<col width="25%">
-				<col width="13%">
-				<col width="13%">
+				<col width="4%">
+				<col width="20%">
+				<col width="12%">
+				<col width="12%">
+				<col width="11%">
+				<col width="11%">
 				<col width="15%">
-				<col width="19%">
+				<col width="15%">
 			</colgroup>
 			<thead>
 				<tr>
 					<th>순번</th>
 					<th>UUID</th>
+					<th>단말기명</th>
+					<th>그룹코드</th>
 					<th>단말기상태</th>
 					<th>작업자</th>
 					<th>작업일시</th>
@@ -134,13 +152,15 @@ function pageSearch(page){
 			<tbody>
 				<c:if test="${list == null || fn:length(list) == 0}">
 				<tr>
-					<td class="h_35px" colspan="6">조회 목록이 없습니다.</td>
+					<td class="h_35px" colspan="8">조회 목록이 없습니다.</td>
 				</tr>
 				</c:if>
 				<c:forEach items="${list}" var="list" varStatus="status">
 				<tr>
 					<td>${(pagination.totRecord - (pagination.totRecord-status.index)+1) + ((pagination.curPage - 1) * pagination.recPerPage)}</td>
 					<td><c:out value="${list.device_id}"/></td>
+					<td><c:out value="${list.device_nm}"/></td>
+					<td><c:out value="${list.group_cd}"/></td>
 					<td><c:out value="${list.status_nm}"/></td>
 					<td><c:out value="${list.regist_nm}"/></td>
 					<td><c:out value="${list.regist_dt}"/></td>

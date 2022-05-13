@@ -3,11 +3,6 @@
 
 <mapper namespace="device">
 
-	<select id="selectDeviceInfo" parameterType="HashMap" resultType="HashMap">
-		<include refid="selectDeviceInfoColumns" />
-		 where sn = #{sn}
-	</select>
-	
 	<sql id="selectDeviceInfoColumns">
 		select sn 
 		     , device_id 
@@ -22,16 +17,11 @@
 		     , status
 		     , (select cd_nm from cmn_cd where upper_cd = '00007' and esntl_cd = status) status_nm
 		     , date_format(regist_dt, '%Y-%m-%d %H:%i:%s') regist_dt 
-		     , date_format(updt_dt, '%Y-%m-%d %H:%i:%s') updt_dt 
+		     , date_format(updt_dt, '%Y-%m-%d %H:%i:%s') updt_dt
+		     , device_nm
+		     , group_cd
 		  from frs_device	
 	</sql>
-	
-	<select id="selectDeviceList" parameterType="HashMap" resultType="HashMap">
-		<include refid="selectDeviceInfoColumns" />
-		<include refid="selectDeviceListConditions" />
-		 order by regist_dt desc
-		 limit #{srchCnt} offset #{offset}  
-	</select>
 	
 	<sql id="selectDeviceListConditions">
 		 where regist_dt <![CDATA[>=]]> str_to_date(#{srchDtFr}, '%Y-%m-%d')
@@ -51,7 +41,25 @@
 		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'>
 		   and device_id = #{srchUuid}
 		</if>
-	</sql>	
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchDeviceNm)'>
+		   and device_nm like concat('%', #{srchDeviceNm}, '%')
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchGroupCd)'>
+		   and group_cd = #{srchGroupCd}
+		</if>
+	</sql>		
+
+	<select id="selectDeviceInfo" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectDeviceInfoColumns" />
+		 where sn = #{sn}
+	</select>
+	
+	<select id="selectDeviceList" parameterType="HashMap" resultType="HashMap">
+		<include refid="selectDeviceInfoColumns" />
+		<include refid="selectDeviceListConditions" />
+		 order by regist_dt desc
+		 limit #{srchCnt} offset #{offset}  
+	</select>
 	
 	<select id="selectDeviceListCount" parameterType="HashMap" resultType="int">
 		select count(1)
@@ -72,15 +80,15 @@
 	</update>
 	
 	<insert id="insertDeviceStatusHistoryForStatus" parameterType="HashMap">
-		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt)
-		select sn, device_id, status, #{regist_id}, updt_dt
+		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt, device_nm, group_cd)
+		select sn, device_id, status, #{regist_id}, updt_dt, device_nm, group_cd
 		  from frs_device
 		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
 	</insert>
 	
 	<insert id="insertDeviceStatusHistoryForDelete" parameterType="HashMap">
-		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt, description)
-		select sn, device_id, 'D', #{regist_id}, now(3), #{description}
+		insert into frs_device_status_log (device_sn, device_id, status, regist_id, regist_dt, description, device_nm, group_cd)
+		select sn, device_id, 'D', #{regist_id}, now(3), #{description}, device_nm, group_cd
 		  from frs_device
 		 where sn in <foreach collection="id_list" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
 	</insert>
@@ -93,6 +101,8 @@
 		     , ifnull(b.user_nm, a.regist_id) as regist_nm
 		     , date_format(a.regist_dt, '%Y-%m-%d %H:%i:%s') regist_dt
 		     , description
+		     , device_nm
+		     , group_cd
 		  from frs_device_status_log a
 		       left outer join cmn_user b on b.esntl_id = a.regist_id
 		<include refid="selectDeviceStatusHistoryConditions" />
@@ -107,6 +117,12 @@
 		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchUuid)'>
 		   and a.device_id = #{srchUuid}
 		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchDeviceNm)'>
+		   and device_nm = #{srchDeviceNm}
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchGroupCd)'>
+		   and group_cd = #{srchGroupCd}
+		</if>		
 	</sql>		
 	
 	<select id="selectDeviceStatusHistoryCount" parameterType="HashMap" resultType="int">
