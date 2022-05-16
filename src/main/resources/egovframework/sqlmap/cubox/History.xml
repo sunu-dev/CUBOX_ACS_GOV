@@ -8,13 +8,15 @@
 		     , date_format(request_dt, '%Y-%m-%d %H:%i:%S') as request_dt
 		     , face_id
 		     , device_id
+		     , device_nm
+		     , group_cd
 		     , score 
 		     , threshold
 		     , result_cd 
 		     , case when result_cd = 1 then '성공' when result_cd = 0 then '실패' else '갤러리없음' end as result_nm 
 		     , image_1_path
 		     , image_2_path
-		     , case when face_id is null or face_id = '' then device_id else face_id end as main_uuid  
+		     , case when face_id is null or face_id = '' then device_id else face_id end as main_uuid
 		  from frs_history_iden
 	]]></sql>
 	
@@ -23,8 +25,11 @@
 		   and request_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')]]>
 		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(resultCd)'>
 		   and result_cd = #{resultCd} 
-		</if>	
-	</sql> 
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchGroupCd)'>
+		   and group_cd = #{srchGroupCd} 
+		</if>
+	</sql>
 	
 	<select id="selectIdentifyHistInfo" parameterType="HashMap" resultType="HashMap">
 		<include refid="selectIdentifyHistColumns" />
@@ -57,6 +62,8 @@
 		select sn
 		     , date_format(request_dt, '%Y-%m-%d %H:%i:%S') as request_dt
 		     , device_id
+		     , device_nm
+		     , group_cd		     
 		     , score 
 		     , threshold
 		     , result_cd 
@@ -72,7 +79,10 @@
 		   and request_dt <= str_to_date(concat(#{srchDtTo}, ' 23:59:59'), '%Y-%m-%d %H:%i:%S')]]>
 		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(resultCd)'>
 		   and result_cd = #{resultCd} 
-		</if>	
+		</if>
+		<if test='@cubox.admin.cmmn.util.CommonUtils@notEmpty(srchGroupCd)'>
+		   and group_cd = #{srchGroupCd} 
+		</if>			
 	</sql> 
 	
 	<select id="selectVerifyHistInfo" parameterType="HashMap" resultType="HashMap">

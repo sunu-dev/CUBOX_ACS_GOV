@@ -3,10 +3,11 @@
 
 <mapper namespace="schedule">
 	
+	<!-- 일별인증통계 -->
 	<insert id="insertStatCrttDay" parameterType="HashMap">
 		delete from stat_crtt_day where stat_de = replace(#{base_de}, '-', '');
 			
-		<if test='identification_yn == "Y"'><![CDATA[			
+		<if test='identification_yn == "Y"'><![CDATA[
 		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, crtt_cl, batch_dt)
 		select stat_de
 		     , sum(requst_cnt) requst_cnt
@@ -20,15 +21,15 @@
 			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
 			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
 			  from frs_history_iden
-			 where request_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
-			   and request_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)
+			 where request_dt >= str_to_date(#{base_de}, '%Y-%m-%d')
+			   and request_dt <  adddate(str_to_date(#{base_de}, '%Y-%m-%d'), 1)
 			 group by date_format(request_dt, '%Y%m%d')
 			 union all
 			select replace(#{base_de}, '-', ''), 0, 0, 0
 			) t
 		 group by stat_de;
 		]]></if>
-		<if test='verification_yn == "Y"'><![CDATA[	
+		<if test='verification_yn == "Y"'><![CDATA[
 		insert into stat_crtt_day (stat_de, requst_cnt, succes_cnt, failr_cnt, crtt_cl, batch_dt)
 		select stat_de
 		     , sum(requst_cnt) requst_cnt
@@ -42,13 +43,67 @@
 			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
 			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
 			  from frs_history_veri
-			 where request_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
-			   and request_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)
+			 where request_dt >= str_to_date(#{base_de}, '%Y-%m-%d')
+			   and request_dt <  adddate(str_to_date(#{base_de}, '%Y-%m-%d'), 1)
 			 group by date_format(request_dt, '%Y%m%d')
 			 union all
 			select replace(#{base_de}, '-', ''), 0, 0, 0
 			) t
-		 group by stat_de;		 
+		 group by stat_de;
+		]]></if>
+	</insert>
+	
+	<!-- 일별인증통계(group_cd) -->
+	<insert id="insertStatCrttGrDay" parameterType="HashMap">
+		delete from stat_crtt_gr_day where stat_de = replace(#{base_de}, '-', '');
+			
+		<if test='identification_yn == "Y"'><![CDATA[
+		insert into stat_crtt_gr_day (stat_de, requst_cnt, succes_cnt, failr_cnt, group_cd, crtt_cl, batch_dt)
+		select stat_de
+		     , sum(requst_cnt) requst_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , sum(failr_cnt) failr_cnt
+		     , group_cd
+		     , 'I'
+		     , current_timestamp() batch_dt
+		from (
+			select date_format(request_dt, '%Y%m%d') stat_de
+			     , ifnull(group_cd, 'ZZ_GroupCd') group_cd
+			     , count(1) requst_cnt
+			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
+			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
+			  from frs_history_iden
+			 where request_dt >= str_to_date(#{base_de}, '%Y-%m-%d')
+			   and request_dt <  adddate(str_to_date(#{base_de}, '%Y-%m-%d'), 1)
+			 group by date_format(request_dt, '%Y%m%d'), ifnull(group_cd, 'ZZ_GroupCd')
+			 union all
+			select replace(#{base_de}, '-', ''), 'ZZ_GroupCd',  0, 0, 0
+			) t
+		 group by stat_de, group_cd;
+		]]></if>
+		<if test='verification_yn == "Y"'><![CDATA[
+		insert into stat_crtt_gr_day (stat_de, requst_cnt, succes_cnt, failr_cnt, group_cd, crtt_cl, batch_dt)
+		select stat_de
+		     , sum(requst_cnt) requst_cnt
+		     , sum(succes_cnt) succes_cnt
+		     , sum(failr_cnt) failr_cnt
+		     , group_cd
+		     , 'V'
+		     , current_timestamp() batch_dt
+		from (
+			select date_format(request_dt, '%Y%m%d') stat_de
+			     , ifnull(group_cd, 'ZZ_GroupCd') group_cd
+			     , count(1) requst_cnt
+			     , sum(case when result_cd = 1 then 1 else 0 end) succes_cnt
+			     , sum(case when result_cd = 0 then 1 else 0 end) failr_cnt
+			  from frs_history_veri
+			 where request_dt >= str_to_date(#{base_de}, '%Y-%m-%d')
+			   and request_dt <  adddate(str_to_date(#{base_de}, '%Y-%m-%d'), 1)
+			 group by date_format(request_dt, '%Y%m%d'), ifnull(group_cd, 'ZZ_GroupCd')
+			 union all
+			select replace(#{base_de}, '-', ''), 'ZZ_GroupCd',  0, 0, 0
+			) t
+		 group by stat_de, group_cd;
 		]]></if>
 	</insert>
 	
@@ -68,8 +123,8 @@
 			     , sum(case when feature is null or trim(feature) = '' then 0 else 1 end) succes_cnt
 			     , sum(case when feature is null or trim(feature) = '' then 1 else 0 end) failr_cnt 
 			  from frs_gallery    
-			 where regist_dt >= date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour)
-			   and regist_dt <  adddate(date_add(str_to_date(#{base_de}, '%Y-%m-%d'), interval 6 hour), 1)		  
+			 where regist_dt >= str_to_date(#{base_de}, '%Y-%m-%d')
+			   and regist_dt <  adddate(str_to_date(#{base_de}, '%Y-%m-%d'), 1)		  
 			group by date_format(regist_dt, '%Y%m%d')
 			 union all
 			select replace(#{base_de}, '-', ''), 0, 0, 0

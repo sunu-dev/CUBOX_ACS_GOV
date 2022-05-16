@@ -180,7 +180,7 @@ function pageSearch(page){
 <form id="frmSearch" name="frmSearch" method="post" onsubmit="return false;">
 <input type="hidden" id="srchPage" name="srchPage" value="${pagination.curPage}">
 <%-- <input type="hidden" id="chkValueArray" name="chkValueArray" value="uuid,feature_yn,create_dt" /> 
-<input type="hidden" id="chkTextArray" name="chkTextArray" value="UUID,이미지여부,등록일시"> --%>
+<input type="hidden" id="chkTextArray" name="chkTextArray" value="단말기ID,이미지여부,등록일시"> --%>
 <input type="hidden" id="initYn" name="initYn" value="N">
 
 <!--검색박스 -->
@@ -219,8 +219,8 @@ function pageSearch(page){
 	</div>
 	<div class="search_in_bline">
 		<div class="comm_search mr_20">
-			<div class="title">UUID</div>
-			<input type="text" id="srchUuid" name="srchUuid" class="w_200px input_com" placeholder="UUID " value='<c:out value="${params.srchUuid}"/>'>
+			<div class="title">단말기ID</div>
+			<input type="text" id="srchUuid" name="srchUuid" class="w_200px input_com" placeholder="단말기ID " value='<c:out value="${params.srchUuid}"/>'>
 		</div>
 		<div class="comm_search mr_20">
 			<div class="title">단말기명</div>
@@ -259,7 +259,7 @@ function pageSearch(page){
 				<col width="4%">
 				<col width="4%">
 				<col width="13%">
-				<col width="13%"><%--UUID--%>
+				<col width="13%"><%--단말기ID--%>
 				<col width="10%">
 				<col width="10%">
 				<col width="8%">
@@ -273,7 +273,7 @@ function pageSearch(page){
 					<th><input type="checkbox" id="chkAll" name="chkAll" value="Y"></th>
 					<th>순번</th>
 					<th>등록일시</th>
-					<th>UUID</th>
+					<th>단말기ID</th>
 					<th>단말기명</th>
 					<th>그룹코드</th>
 					<th>단말기유형</th>

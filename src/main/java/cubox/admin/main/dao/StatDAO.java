@@ -21,6 +21,14 @@ public class StatDAO extends EgovAbstractMapper {
 		return selectList(sqlNameSpace+"selectCrttDayXls", param);
 	}
 	
+	public List<Map<String, Object>> selectCrttGrDay(Map<String, Object> param) throws Exception {
+		return selectList(sqlNameSpace+"selectCrttGrDay", param);
+	}
+	
+	public List<ExcelVO> selectCrttGrDayXls(Map<String, Object> param) throws Exception {
+		return selectList(sqlNameSpace+"selectCrttGrDayXls", param);
+	}	
+	
 	public List<Map<String, Object>> selectGlryDay(Map<String, Object> param) throws Exception {
 		return selectList(sqlNameSpace+"selectGlryDay", param);
 	}
@@ -28,4 +36,5 @@ public class StatDAO extends EgovAbstractMapper {
 	public List<ExcelVO> selectGlryDayXls(Map<String, Object> param) throws Exception {
 		return selectList(sqlNameSpace+"selectGlryDayXls", param);
 	}
+
 }

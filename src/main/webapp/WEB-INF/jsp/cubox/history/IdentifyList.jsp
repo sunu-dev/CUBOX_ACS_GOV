@@ -26,6 +26,7 @@ $(function(){
 	$("#btnReset").click(function(){
 		$("#srchDtFr").val("${initVal1}");
 		$("#srchDtTo").val("${initVal2}");
+		$("#srchGroupCd").val("");	
 		$('.search_box input[type="checkbox"]').prop("checked",false).trigger('change');
 	});
 	
@@ -37,6 +38,8 @@ $(function(){
 	$("#srchRecPerPage").change(function(){
 		pageSearch();
 	});	
+	
+	$("#srchGroupCd").keyup(function(e){if(e.keyCode == 13) pageSearch("1");});
 });
 
 function fnSearch() {
@@ -106,6 +109,10 @@ function fnDetail(str) {
 				<label for="chkFail" class="ml_10"> 실패</label>
 			</div>		
 		</div>
+		<div class="comm_search mr_20">
+			<div class="title">그룹코드</div>
+			<input type="text" id="srchGroupCd" name="srchGroupCd" class="w_142px input_com" placeholder="그룹코드" value='<c:out value="${params.srchGroupCd}"/>'>
+		</div>		
 		<div class="comm_search ml_40">
 			<div class="search_btn2" onclick="fnSearch();"></div>
 		</div>
@@ -142,7 +149,8 @@ function fnDetail(str) {
 				<col width="10%">
 				<col width="10%">
 				<col width="10%">
-				<col width="30%">
+				<col width="15%">
+				<col width="15%">
 			</colgroup>		
 			<thead>
 				<tr>
@@ -153,12 +161,13 @@ function fnDetail(str) {
 					<th>매칭점수</th>
 					<th>기준점수</th>
 					<th>단말기ID</th>
+					<th>그룹코드</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:if test="${list == null || fn:length(list) == 0}">
 				<tr>
-					<td class="h_35px" colspan="7">조회 목록이 없습니다.</td>
+					<td class="h_35px" colspan="8">조회 목록이 없습니다.</td>
 				</tr>
 				</c:if>
 				<c:forEach items="${list}" var="list" varStatus="status">
@@ -176,6 +185,7 @@ function fnDetail(str) {
 					<td><font class="${vFontColor}"><c:out value="${list.score}"/></font></td>
 					<td><font class="font-color_V"><c:out value="${list.threshold}"/></font></td>
 					<td><c:out value="${list.device_id}"/></td>
+					<td><c:out value="${list.group_cd}"/></td>
 				</tr>
 				</c:forEach>
 			</tbody>

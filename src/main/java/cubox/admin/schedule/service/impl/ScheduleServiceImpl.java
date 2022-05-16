@@ -25,6 +25,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 	
 	@Override
+	public int insertStatCrttGrDay(Map<String, String> param) throws Exception {
+		return scheduleDAO.insertStatCrttGrDay(param);
+	}
+	
+	@Override
 	public int insertStatGlryDay(String sBaseDe) throws Exception {
 		return scheduleDAO.insertStatGlryDay(sBaseDe);
 	}

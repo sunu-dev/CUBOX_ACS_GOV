@@ -27,6 +27,16 @@ public class StatServiceImpl extends EgovAbstractServiceImpl implements StatServ
 	public List<ExcelVO> selectCrttDayXls(Map<String, Object> param) throws Exception {
 		return statDAO.selectCrttDayXls(param); 
 	}
+	
+	@Override
+	public List<Map<String, Object>> selectCrttGrDay(Map<String, Object> param) throws Exception {
+		return statDAO.selectCrttGrDay(param); 
+	}
+	
+	@Override
+	public List<ExcelVO> selectCrttGrDayXls(Map<String, Object> param) throws Exception {
+		return statDAO.selectCrttGrDayXls(param); 
+	}	
 
 	@Override
 	public List<Map<String, Object>> selectGlryDay(Map<String, Object> param) throws Exception {

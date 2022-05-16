@@ -13,6 +13,10 @@ public class ScheduleDAO extends EgovAbstractMapper {
 		return insert("schedule.insertStatCrttDay", param);
 	}
 	
+	public int insertStatCrttGrDay(Map<String, String> param) throws Exception {
+		return insert("schedule.insertStatCrttGrDay", param);
+	}
+	
 	public int insertStatGlryDay(String sBaseDe) throws Exception {
 		return insert("schedule.insertStatGlryDay", sBaseDe);
 	}	

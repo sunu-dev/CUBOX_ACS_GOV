@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
+	<!-- 일별인증통계 -->
 	<bean id="beanBatchCrttDay" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="scheduleResve" />
 		<property name="targetMethod" value="batchCrttDayStat"  />
@@ -12,6 +13,18 @@
 	   	<property name="cronExpression" value="0 10 0 * * ?" /> 
 	</bean>	
 	
+	<!-- 일별인증통계(group_cd) -->
+	<bean id="beanBatchCrttGrDay" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="scheduleResve" />
+		<property name="targetMethod" value="batchCrttGrDayStat"  />
+		<property name="concurrent" value="false" />
+	</bean>	
+	<bean id="beanBatchCrttGrDayTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="beanBatchCrttGrDay" />
+		<property name="cronExpression" value="0 15 0 * * ?" /> 
+	</bean>	
+	
+	<!-- 일별등록통계 -->
 	<bean id="beanBatchGlryDay" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="scheduleResve" />
 		<property name="targetMethod" value="batchGlryDayStat"  />
@@ -27,6 +40,7 @@
 			<list>
 				<ref bean="beanBatchCrttDayTrigger" />
 				<ref bean="beanBatchGlryDayTrigger" />
+				<ref bean="beanBatchCrttGrDayTrigger" />
 			</list>
 		</property>
 		<!-- <property name="quartzProperties">

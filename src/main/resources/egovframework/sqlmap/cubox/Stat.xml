@@ -28,6 +28,53 @@
 		<include refid="getCrttDayStat" />
 		) t
 	</select>
+
+	<sql id="getCrttGrDayStat"><![CDATA[
+		with tb_stat as (
+		select t.* 
+		  from (
+			select stat_de, group_cd
+			     , sum(requst_cnt) requst_cnt
+			     , sum(succes_cnt) succes_cnt
+			     , sum(failr_cnt)  failr_cnt
+			from stat_crtt_gr_day
+			where stat_de >= replace(#{srchDtFr}, '-', '')
+			and stat_de <= replace(#{srchDtTo}, '-', '')
+			group by stat_de, group_cd with rollup
+			union all
+			select '30000101', group_cd
+			     , sum(requst_cnt) requst_cnt
+			     , sum(succes_cnt) succes_cnt
+			     , sum(failr_cnt)  failr_cnt
+			from stat_crtt_gr_day
+			where stat_de >= replace(#{srchDtFr}, '-', '')
+			and stat_de <= replace(#{srchDtTo}, '-', '')
+			group by group_cd with rollup
+		  ) t
+		where t.stat_de is not null
+		)
+		select (case when stat_de = '30000101' then '전체' else date_format(str_to_date(stat_de, '%Y%m%d'), '%Y-%m-%d') end) as stat_de_frm
+		     , (case when group_cd = 'ZZ_GroupCd' then '그룹코드없음' else (case when stat_de = '30000101' then ifnull(group_cd, '합계') else ifnull(group_cd, '소계') end) end) as group_cd
+		     , requst_cnt 
+		     , succes_cnt 
+		     , failr_cnt 
+		     , round(succes_cnt / (case when requst_cnt > 0 then requst_cnt else 1 end) * 100, 2) as succes_rate
+		     , round(failr_cnt / (case when requst_cnt > 0 then requst_cnt else 1 end) * 100, 2) as failr_rate
+		     , count(1) over (partition by stat_de) cf_cnt
+		  from tb_stat
+		 order by stat_de desc, ifnull(group_cd, 'AAAAA')
+	]]></sql>
+
+	<select id="selectCrttGrDay" parameterType="HashMap" resultType="HashMap">
+		<include refid="getCrttGrDayStat" />
+	</select>
+	
+	<select id="selectCrttGrDayXls" parameterType="HashMap" resultType="excelVO">
+		select ${excelColumns} 
+		  from ( 
+		<include refid="getCrttGrDayStat" />
+		) t
+	</select>
 	
 	<sql id="getGlryDayStat"><![CDATA[
 		select case when gb = 1 then '합계' else date_format(str_to_date(s.stat_de, '%Y%m%d'), '%Y-%m-%d') end as stat_de

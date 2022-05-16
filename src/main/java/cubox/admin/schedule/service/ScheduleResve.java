@@ -60,6 +60,21 @@ public class ScheduleResve {
 		int cnt = scheduleService.insertStatCrttDay(param);
 		LOGGER.debug("######### [batchCrttDayStat] end!! param:{}, 처리건수:{}", param, cnt);		
 	}
+	
+	public void batchCrttGrDayStat() throws Exception {
+		if(StringUtil.nvl(SRV_GB).equals("local")) return;
+		
+		String sBaseDe = commonUtils.getStringDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
+		
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("base_de", sBaseDe);
+		param.put("identification_yn", StringUtil.nvl(System.getenv("FRS_IDENTIFICATION_YN"), "N"));
+		param.put("verification_yn", StringUtil.nvl(System.getenv("FRS_VERIFICATION_YN"), "N"));
+		
+		LOGGER.debug("######### [batchCrttGrDayStat(group_cd)] start param:{}", param);
+		int cnt = scheduleService.insertStatCrttGrDay(param);
+		LOGGER.debug("######### [batchCrttGrDayStat(group_cd)] end!! param:{}, 처리건수:{}", param, cnt);		
+	}	
 		
 	private String getLocalServerIp(){
 		String ip = "";

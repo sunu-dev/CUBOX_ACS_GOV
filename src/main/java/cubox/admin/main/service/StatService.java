@@ -11,6 +11,10 @@ public interface StatService {
 	public List<Map<String, Object>> selectCrttDay(Map<String, Object> param) throws Exception;
 	public List<ExcelVO> selectCrttDayXls(Map<String, Object> param) throws Exception;
 	
+	public List<Map<String, Object>> selectCrttGrDay(Map<String, Object> param) throws Exception;
+	public List<ExcelVO> selectCrttGrDayXls(Map<String, Object> param) throws Exception;	
+	
 	public List<Map<String, Object>> selectGlryDay(Map<String, Object> param) throws Exception;
 	public List<ExcelVO> selectGlryDayXls(Map<String, Object> param) throws Exception;
+
 }

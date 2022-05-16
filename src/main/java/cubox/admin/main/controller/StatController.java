@@ -110,6 +110,75 @@ public class StatController {
 		return modelAndView;
 	}	
 	
+	@RequestMapping(value="/stat/crttGrDay.do")
+	public String crttGrDay(ModelMap model, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
+		LoginVO loginVO = (LoginVO)request.getSession().getAttribute("loginVO");
+
+		String menuUrl = request.getServletPath();
+		String menuNm = StringUtil.nvl(menuService.selectMenuNm(menuUrl));
+		String initYn = StringUtil.nvl(param.get("initYn"), "Y");
+		String initVal1 = commonUtils.getStringDate(DateUtils.addDays(new Date(), -7), "yyyy-MM-dd");
+		String initVal2 = commonUtils.getStringDate(DateUtils.addDays(new Date(), -1), "yyyy-MM-dd");
+		
+		LOGGER.debug("###[crttGrDay] param : {}", param);
+		
+		if (loginVO != null && loginVO.getUserId() != null && !loginVO.getUserId().equals("")) {
+			
+			if(initYn.equals("Y")) {
+				param.put("srchDtFr", initVal1);
+				param.put("srchDtTo", initVal2); 
+			}
+			
+			// select
+			List<Map<String, Object>> list = statService.selectCrttGrDay(param);
+			
+			model.addAttribute("menuNm", menuNm); 
+			model.addAttribute("menuUrl", menuUrl); 
+			model.addAttribute("params", param); 
+			model.addAttribute("list", list);
+
+			// 검색초기값
+			model.addAttribute("initVal1", initVal1);
+			model.addAttribute("initVal2", initVal2);
+
+			return "cubox/stat/CrttGrDay";
+		} else {
+			return "redirect:/login.do";
+		}
+	}
+
+	@RequestMapping(value="/stat/crttGrDayXls.do")
+	public ModelAndView crttGrDayXls(HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
+		LoginVO loginVO = (LoginVO)request.getSession().getAttribute("loginVO");
+		ModelAndView modelAndView = new ModelAndView();
+		LOGGER.debug("###[crttGrDayXls] param : {}", param);
+		
+		if (loginVO != null && loginVO.getUserId() != null && !loginVO.getUserId().equals("")) {
+			
+			String chkTextArray = StringUtil.nvl(param.get("chkTextArray"));
+			String[] chkText = chkTextArray.split(",");
+			
+			String chkValueArray = StringUtil.nvl(param.get("chkValueArray"));
+			String[] chkValue = chkValueArray.split(",");
+			String excelColumns = "";
+			for(int i = 1 ; i <= chkValue.length ; i++) {
+				if(i > 1) excelColumns += ", ";
+				excelColumns += chkValue[i-1] + " as CELL" + String.valueOf(i); 
+			}
+			param.put("excelColumns", excelColumns);
+			
+			// select
+			List<ExcelVO> list = statService.selectCrttGrDayXls(param);
+			
+			modelAndView.setViewName("excelDownloadView");
+			modelAndView.addObject("resultList", list);
+			modelAndView.addObject("excelName", "일별인증통계(그룹)");
+			modelAndView.addObject("excelHeader", chkText);
+		}
+		
+		return modelAndView;
+	}	
+	
 	@RequestMapping(value="/stat/glryDay.do")
 	public String glryDay(ModelMap model, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception {
 		LoginVO loginVO = (LoginVO)request.getSession().getAttribute("loginVO");
@@ -179,6 +248,4 @@ public class StatController {
 		return modelAndView;
 	}	
 		
-	
-
 }
